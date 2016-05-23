@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "CD4984342DDBC928FF8EC3A3BB65687742028DA2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6B0227DC7DD03111F80F9EA297B2B510D6653DFA" : 0,
+    "CD4984342DDBC928FF8EC3A3BB65687742028DA2" : 0,
+    "BDA1FB1FF98F5517970B733EF9A7AC84B7331F74" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "91E65971-F675-47F4-8AFB-AEF6922448B6",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6B0227DC7DD03111F80F9EA297B2B510D6653DFA" : "EasyParkingTl\/EasyCar\/3rd\/UIView-Positioning\/",
+    "CD4984342DDBC928FF8EC3A3BB65687742028DA2" : "monkeyParking\/",
+    "BDA1FB1FF98F5517970B733EF9A7AC84B7331F74" : "EasyParkingTl\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "EasyCar",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "EasyCar.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/freak4pc\/UIView-Positioning.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6B0227DC7DD03111F80F9EA297B2B510D6653DFA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/PC1119\/EasyCar.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "BDA1FB1FF98F5517970B733EF9A7AC84B7331F74"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/PC1119\/monkeyParking.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CD4984342DDBC928FF8EC3A3BB65687742028DA2"
+    }
+  ]
+}

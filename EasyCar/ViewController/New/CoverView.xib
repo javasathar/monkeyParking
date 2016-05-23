@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="u5p-NS-n4i" customClass="CoverView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LnF-oG-S7E" userLabel="Center View">
+                    <rect key="frame" x="64" y="158" width="192" height="164"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zhanweitu-1" translatesAutoresizingMaskIntoConstraints="NO" id="w0y-HL-DbY">
+                            <rect key="frame" x="0.0" y="0.0" width="192" height="135"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="w0y-HL-DbY" secondAttribute="height" multiplier="64:45" id="Y3A-Xc-Gjz"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="努力加载中..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z1l-Hx-ads">
+                            <rect key="frame" x="-20" y="143" width="232" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="VWi-yn-XKb"/>
+                                <constraint firstAttribute="height" constant="21" id="Ven-3a-3h7"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <color key="textColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="Ven-3a-3h7"/>
+                                </mask>
+                            </variation>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="w0y-HL-DbY" firstAttribute="leading" secondItem="LnF-oG-S7E" secondAttribute="leading" id="6IK-mg-7D2"/>
+                        <constraint firstItem="w0y-HL-DbY" firstAttribute="top" secondItem="LnF-oG-S7E" secondAttribute="top" id="9NQ-tg-Mxf"/>
+                        <constraint firstItem="Z1l-Hx-ads" firstAttribute="leading" secondItem="LnF-oG-S7E" secondAttribute="leading" constant="-20" id="Swb-hz-e3I"/>
+                        <constraint firstItem="Z1l-Hx-ads" firstAttribute="top" secondItem="w0y-HL-DbY" secondAttribute="bottom" constant="8" id="b3x-4P-rEA"/>
+                        <constraint firstAttribute="bottom" secondItem="Z1l-Hx-ads" secondAttribute="bottom" id="chL-ZP-8i4"/>
+                        <constraint firstAttribute="width" secondItem="LnF-oG-S7E" secondAttribute="height" multiplier="1:1" id="ffB-4W-tEn"/>
+                        <constraint firstAttribute="trailing" secondItem="Z1l-Hx-ads" secondAttribute="trailing" constant="-20" id="hKQ-mH-CkO"/>
+                        <constraint firstAttribute="trailing" secondItem="w0y-HL-DbY" secondAttribute="trailing" id="xi2-cz-noM"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="ffB-4W-tEn"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+            <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="LnF-oG-S7E" firstAttribute="centerX" secondItem="u5p-NS-n4i" secondAttribute="centerX" id="Xz4-1R-Zof"/>
+                <constraint firstItem="LnF-oG-S7E" firstAttribute="width" secondItem="u5p-NS-n4i" secondAttribute="width" multiplier="0.6" id="hMD-1N-WEY"/>
+                <constraint firstItem="LnF-oG-S7E" firstAttribute="centerY" secondItem="u5p-NS-n4i" secondAttribute="centerY" id="sk9-DH-alt"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="imgView" destination="w0y-HL-DbY" id="gDr-0c-P4G"/>
+                <outlet property="titleLB" destination="Z1l-Hx-ads" id="Yp3-Es-8Cz"/>
+                <outletCollection property="gestureRecognizers" destination="iWz-DB-If2" appends="YES" id="Oad-gX-2Wr"/>
+            </connections>
+            <point key="canvasLocation" x="471" y="427"/>
+        </view>
+        <tapGestureRecognizer id="iWz-DB-If2" userLabel="点击view">
+            <connections>
+                <action selector="clickView:" destination="u5p-NS-n4i" id="r08-bf-V3o"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+    <resources>
+        <image name="zhanweitu-1" width="400" height="289"/>
+    </resources>
+</document>

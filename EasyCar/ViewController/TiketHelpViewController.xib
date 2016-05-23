@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TiketHelpViewController">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="r1g-sp-X0P">
+                    <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                    <color key="backgroundColor" red="0.90420095943368928" green="0.9814040802554902" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <mutableString key="text">●什么是优惠券  优惠券是由停车大圣发放并认可。当您使用停车大圣优惠券抵用车费时，可以用来抵扣部分或全部费用。
+●优惠券如何使用？  当您在使用停车大圣支付停车费时，可以自行选择优惠券，或系统会自动为您选择一张符合条件的优惠券并抵扣当前停车费费用。●如果未支付，已使用的优惠券怎么处理？  如果未支付订单，已选择的停车券，都会退回至“我的钱包—优惠券”中，在优惠券有效期内可继续使用。●如何获得优惠券？  点击“我的优惠券”有机会获得一张优惠券。●怎么查看我的优惠券？  在“我的钱包—我的优惠券”里可查看停车券详情。●优惠券的使用规则1、优惠券仅限与停车大圣有合作的停车场使用。2、每个支付订单只能使用一张优惠券，不可叠加使用。3、优惠券不能兑换现金，不找零。如果您使用了10优惠券，但最终停车费为9元，超出的1元将不予退回。</mutableString>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                </textView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="r1g-sp-X0P" secondAttribute="trailing" id="JFn-Ef-EsE"/>
+                <constraint firstItem="r1g-sp-X0P" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="fEz-A6-imk"/>
+                <constraint firstItem="r1g-sp-X0P" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="64" id="sEW-Hl-MMp"/>
+                <constraint firstAttribute="bottom" secondItem="r1g-sp-X0P" secondAttribute="bottom" id="wag-Tb-Sav"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+</document>

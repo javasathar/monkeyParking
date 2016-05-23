@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WoYaoTingCheVC">
+            <connections>
+                <outlet property="bottom" destination="7KZ-50-oZL" id="UMT-Qm-GBg"/>
+                <outlet property="mapView" destination="la1-Hh-HUh" id="5dF-ZR-hxr"/>
+                <outlet property="trafficBtn" destination="KkZ-Q3-LjZ" id="Z4e-Um-b11"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="la1-Hh-HUh">
+                    <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                </mapView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KkZ-Q3-LjZ" userLabel="路况">
+                    <rect key="frame" x="277" y="108" width="35" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="KkZ-Q3-LjZ" secondAttribute="height" multiplier="1:1" id="thL-BM-mtO"/>
+                    </constraints>
+                    <state key="normal" image="pp_findpark_real_traffic_close"/>
+                    <state key="selected" image="pp_findpark_real_traffic_open"/>
+                    <connections>
+                        <action selector="clickTrafficBtn:" destination="-1" eventType="touchUpInside" id="Rzi-YF-qhr"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="npb-Hj-fWg" userLabel="呵呵线">
+                    <rect key="frame" x="0.0" y="567" width="320" height="1"/>
+                    <color key="backgroundColor" red="0.67843137249999996" green="0.74117647060000003" blue="0.81568627449999997" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="i3X-SA-VH0"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hwc-ed-ewP" userLabel="减">
+                    <rect key="frame" x="277" y="517" width="35" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="Hwc-ed-ewP" secondAttribute="height" multiplier="1:1" id="BZh-5f-9Qb"/>
+                    </constraints>
+                    <state key="normal" image="pp_findpark_decrease"/>
+                    <connections>
+                        <action selector="clickDecrease:" destination="-1" eventType="touchUpInside" id="fds-Na-rSD"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y1r-IK-1zE" userLabel="加">
+                    <rect key="frame" x="277" y="482" width="35" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="Y1r-IK-1zE" secondAttribute="height" multiplier="1:1" id="S3c-Z0-Tkd"/>
+                    </constraints>
+                    <state key="normal" image="pp_findpark_increase"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="S3c-Z0-Tkd"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <action selector="clickIncrease:" destination="-1" eventType="touchUpInside" id="bt3-8i-5pc"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vl9-gv-Ove" userLabel="减">
+                    <rect key="frame" x="8" y="517" width="35" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="vl9-gv-Ove" secondAttribute="height" multiplier="1:1" id="wFM-DL-sag"/>
+                    </constraints>
+                    <state key="normal" image="pp_findpark_loc"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="wFM-DL-sag"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <action selector="clickFindLocBtn:" destination="-1" eventType="touchUpInside" id="U9G-LE-XFk"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="la1-Hh-HUh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="0zd-Vv-lWv"/>
+                <constraint firstAttribute="bottom" secondItem="npb-Hj-fWg" secondAttribute="bottom" id="7KZ-50-oZL"/>
+                <constraint firstItem="npb-Hj-fWg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="9GX-DU-mhs"/>
+                <constraint firstItem="Y1r-IK-1zE" firstAttribute="width" secondItem="Y1r-IK-1zE" secondAttribute="height" multiplier="1:1" id="AIG-Dz-ZHd"/>
+                <constraint firstItem="Hwc-ed-ewP" firstAttribute="width" secondItem="KkZ-Q3-LjZ" secondAttribute="width" id="C8Z-SO-QBq"/>
+                <constraint firstItem="vl9-gv-Ove" firstAttribute="width" secondItem="vl9-gv-Ove" secondAttribute="height" multiplier="1:1" id="DCg-cH-SXr"/>
+                <constraint firstItem="Hwc-ed-ewP" firstAttribute="top" secondItem="Y1r-IK-1zE" secondAttribute="bottom" id="FFH-Aw-7ok"/>
+                <constraint firstItem="la1-Hh-HUh" firstAttribute="top" secondItem="KkZ-Q3-LjZ" secondAttribute="bottom" constant="-79" id="FWY-Js-HbJ"/>
+                <constraint firstItem="Y1r-IK-1zE" firstAttribute="width" secondItem="Y1r-IK-1zE" secondAttribute="height" multiplier="1:1" id="ILC-XB-WmS"/>
+                <constraint firstAttribute="trailing" secondItem="Hwc-ed-ewP" secondAttribute="trailing" constant="8" id="L2M-VA-Hbm"/>
+                <constraint firstAttribute="bottom" secondItem="la1-Hh-HUh" secondAttribute="bottom" id="O2l-eb-bWt"/>
+                <constraint firstItem="npb-Hj-fWg" firstAttribute="top" secondItem="vl9-gv-Ove" secondAttribute="bottom" constant="15" id="OTF-73-yk2"/>
+                <constraint firstItem="npb-Hj-fWg" firstAttribute="top" secondItem="Hwc-ed-ewP" secondAttribute="bottom" constant="15" id="SQa-PP-o8Z"/>
+                <constraint firstItem="Y1r-IK-1zE" firstAttribute="width" secondItem="KkZ-Q3-LjZ" secondAttribute="width" id="TUS-wx-qek"/>
+                <constraint firstAttribute="trailing" secondItem="npb-Hj-fWg" secondAttribute="trailing" id="ahd-P2-hhZ"/>
+                <constraint firstAttribute="bottom" secondItem="npb-Hj-fWg" secondAttribute="bottom" id="f5T-wk-YiZ"/>
+                <constraint firstItem="la1-Hh-HUh" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="64" id="f6I-XU-CuT"/>
+                <constraint firstItem="vl9-gv-Ove" firstAttribute="width" secondItem="KkZ-Q3-LjZ" secondAttribute="width" id="hzX-NL-LKh"/>
+                <constraint firstAttribute="trailing" secondItem="Y1r-IK-1zE" secondAttribute="trailing" constant="8" id="kcV-29-iAs"/>
+                <constraint firstItem="KkZ-Q3-LjZ" firstAttribute="width" secondItem="la1-Hh-HUh" secondAttribute="width" multiplier="0.11" id="mvU-fX-vrw"/>
+                <constraint firstItem="vl9-gv-Ove" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="r11-VE-adc"/>
+                <constraint firstItem="Hwc-ed-ewP" firstAttribute="width" secondItem="Hwc-ed-ewP" secondAttribute="height" multiplier="1:1" id="sPo-Uh-fc6"/>
+                <constraint firstAttribute="trailing" secondItem="KkZ-Q3-LjZ" secondAttribute="trailing" constant="8" id="sZr-Qh-9eE"/>
+                <constraint firstItem="vl9-gv-Ove" firstAttribute="width" secondItem="vl9-gv-Ove" secondAttribute="height" multiplier="1:1" id="sfE-2F-AMK"/>
+                <constraint firstAttribute="trailing" secondItem="la1-Hh-HUh" secondAttribute="trailing" id="spD-do-WWJ"/>
+                <constraint firstItem="npb-Hj-fWg" firstAttribute="top" secondItem="Hwc-ed-ewP" secondAttribute="bottom" constant="8" id="xe3-I1-pBJ"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="DCg-cH-SXr"/>
+                    <exclude reference="AIG-Dz-ZHd"/>
+                    <exclude reference="f5T-wk-YiZ"/>
+                    <exclude reference="xe3-I1-pBJ"/>
+                    <exclude reference="sPo-Uh-fc6"/>
+                </mask>
+            </variation>
+        </view>
+    </objects>
+    <resources>
+        <image name="pp_findpark_decrease" width="100" height="110"/>
+        <image name="pp_findpark_increase" width="100" height="110"/>
+        <image name="pp_findpark_loc" width="100" height="100"/>
+        <image name="pp_findpark_real_traffic_close" width="150" height="150"/>
+        <image name="pp_findpark_real_traffic_open" width="150" height="150"/>
+    </resources>
+</document>

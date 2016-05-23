@@ -1,0 +1,32 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "11a8509e-ebed-a54a-8989-579227f506a5++4585",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "11a8509e-ebed-a54a-8989-579227f506a5++4585" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "11a8509e-ebed-a54a-8989-579227f506a5++4585" : 0,
+    "6B0227DC7DD03111F80F9EA297B2B510D6653DFA" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8905C861-CB20-41C6-AF5D-710953E7FB57",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "11a8509e-ebed-a54a-8989-579227f506a5++4585" : "EasyParking\/",
+    "6B0227DC7DD03111F80F9EA297B2B510D6653DFA" : "EasyParking\/trunk\/EasyParkingTl\/EasyCar\/3rd\/UIView-Positioning\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "EasyCar",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "trunk\/EasyParkingTl\/EasyCar.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/www.beeapk.com\/svn\/IOS",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "11a8509e-ebed-a54a-8989-579227f506a5++4585"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/freak4pc\/UIView-Positioning.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6B0227DC7DD03111F80F9EA297B2B510D6653DFA"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+//
+//  PrefixHeader.pch
+//  EasyCar
+//
+//  Created by zhangke on 15/5/15.
+//  Copyright (c) 2015年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import "UIView+Positioning.h"
+    #import "UIView+ViewFrameGeometry.h"
+    #import "MBProgressHUD.h"
+    #import "MBProgressHUD+Add.h"
+    #import "AFNetworking.h"
+    #import "UIImageView+AFNetworking.h"
+#endif
+
+//MARK - UI
+#pragma mark - Size Define
+#define UI_SCREEN_HEIGHT ([[UIScreen  mainScreen] bounds].size.height)
+#define UI_SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
+
+#pragma mark - Color Define
+#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+
+
+#pragma mark - DeviceAndVersion Define
+#define SystemVersion [[[UIDevice currentDevice] systemVersion] floatValue]
+#define isIOS7 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0)
+#define isIOS8 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+#define isIphone5 ([[UIScreen mainScreen] bounds].size.height == 568 )
+#define isIphone4s ([[UIScreen mainScreen] bounds].size.height == 480 )
+#define isIphone6 ([[UIScreen mainScreen] bounds].size.width == 375 )
+#define isIphone6P ([[UIScreen mainScreen] bounds].size.width > 375 )
+
+/**
+ *
+ */
+#import "AppDelegate.h"
+#import "MJRefresh.h"
+#import "MJExtension.h"
+#import "baseVC.h"
+#import "BaseCell.h"
+#import "MY_nav.h"
+#import "UserDefaultsFiles.h"
+#import "MyMD5.h"
+#import "Car.h"
+#import "unit.h"
+#import "Coupon.h"
+#import "MyCarViewController.h"
+#import "WZLBadgeImport.h"
+#import "PushInfo.h"
+#import "UMSocial.h"
+#import "MLTransition.h"
+
+
+#import "AlipayHeader.h"    //gitHub 支付宝
+#import "GBWXPayManager.h"  //gitHub 微信
+
+#import "CGTool.h"      //2016
+
+// 全局数据
+#define DELE [AppDelegate shareInstance]
+// 宽高
+#define Width  [UIScreen mainScreen].bounds.size.width
+#define Heigth  [UIScreen mainScreen].bounds.size.height
+#define Window [[UIApplication sharedApplication].delegate window]
+// 滚动广告高度
+#define scroll_h (Width)/16*9
+// 字体
+#define commentFond  17
+#define Fond  17
+#define Nav_Fond  17
+#define userFond  15
+// 颜色
+#define MainColor(r,g,b,a)  [[UIColor alloc]initWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a/1.0f]
+#define MainBackColor MainColor(50, 50, 50, 1)
+#define MainBackColor MainColor(50, 50, 50, 1)
+#define MainBlueColor RGBA(50, 129, 255, 1)
+#define MainPageBackColor MainColor(255, 255, 255, 1)
+#define MainPageSelectColor MainColor(1, 1, 1, 1)
+
+
+#define BGColor [[UIColor alloc]initWithRed:238/255.0f green:238/255.0f blue:238/255.0f alpha:1/1.0f]
+// tag值
+#define LoginTag  1000000
+#define FirstPage 1
+
+// 短信
+#define appKey_SMS @"ddbb5c47b2d0"
+#define appSecret_SMS @"54952a7cfe0604ed72070c515116eb41"
+
+// 友盟相关
+#define UM_KEY      @"5653c76567e58e342b005f68"
+#define UM_WX_ID    @"wx00158d3ea95e64ab"
+#define UM_WX_KEY   @"d4624c36b6795d1d99dcf0547af5443d"
+#define UM_QQ_ID    @"1104622805"
+#define UM_QQ_KEY   @"ODzs0c5r7r9wTIin"
+
+// 网站
+//#define SysURL @"http://119.29.9.61:8080/ytcSystem/"
+//#define SysURL @"http://120.76.24.156:8080/ytcSystem/"
+#define SysURL @"http://120.27.135.8:8080/ytcSystem/"
+#define BaseURL SysURL@"rest/api/member/"
+#define PayURL SysURL@"rest/payment/pay/"
+
+// 我的车列表
+#define CarURL SysURL@"rest/api/memberCar/carList"
+// 会员优惠券列表
+#define CouponURL SysURL@"rest/api/coupon/couponList"
+// 用户协议
+//#define UserAgreementURL @"http://119.29.9.61:8080/ytcSystem/ytc.html"
+#define UserAgreementURL @"http://120.76.24.156:8080/ytcSystem/ytc.html"
+// 通知
+#define PushVC @"PushVC"
+#define ReturnCarInfo @"ReturnCarInfo"          // 选择车辆
+#define ReturnCouponInfo @"ReturnCouponInfo"    // 选择优惠券
+#define ReturnParkInfo @"ReturnParkInfo"        // 选停车位
+#define ReturnRentParkInfo @"ReturnRentParkInfo"// 选整租车位
+#define AddCarSuccess @"AddCarSuccess"          // 添加车辆成功
+
+
+
+#define PayResultOfAppointPark_Note @"PayResultOfAppointPark_Note"
+
+#define PayResult @"PayResult" // 支付宝 微信 现在都用同一个通知 1成功  0失败
+#define WXpayresult @"WXpayresult"  // 准备不再使用
+#define Alipayresult @"Alipayresult"// 准备不再使用
+
+/** 下拉刷新图片 */
+#define Scale1 3
+#define RefreshImages \
+  @[\
+    [Unit changeImage:[UIImage imageNamed:@"progress_1"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_2"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_3"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_4"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_5"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_6"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_7"] toScale:Scale1],\
+    [Unit changeImage:[UIImage imageNamed:@"progress_8"] toScale:Scale1],\
+    ]
+//2016
+#define wifiName @"MonkeyParking"
+#import "Database.h"
+#import "FileData.h"
+#define APP_URL @"http://itunes.apple.com/cn/lookup?id=1080875914"
+#define APP_version @"http://www.ytparking.com/yiting/app/app_api/version.json"
+#define APP_APIHOST @"http://www.ytparking.com/app/app_api/"

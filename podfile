@@ -1,0 +1,18 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '6.0'
+
+target 'EasyCar' do
+pod 'AFNetworking', '~> 2.6.0'
+pod 'SDCycleScrollView', '~> 1.6'
+pod 'MJRefresh', '~> 3.0.7'
+pod 'WZLBadge', '~> 1.2.1'
+pod 'Reachability', '~> 3.0'
+pod 'SDWebImage', '~>3.0'
+pod 'CocoaAsyncSocket', '~>7.0'
+pod 'FMDB', '~>2.6.0'
+end
+
+target 'EasyCarTests' do
+
+end
+

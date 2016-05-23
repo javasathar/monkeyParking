@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="274" id="XUZ-EM-lEk" customClass="YHQCell">
+            <rect key="frame" x="0.0" y="0.0" width="363" height="100"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XUZ-EM-lEk" id="prZ-co-AbG">
+                <rect key="frame" x="0.0" y="0.0" width="363" height="99"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oT8-Bn-fli">
+                        <rect key="frame" x="10" y="10" width="100" height="80"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="NKq-vZ-YLv"/>
+                            <constraint firstAttribute="height" constant="80" id="ilO-l7-1Lp"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="截止时间：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DcX-sR-c4x">
+                        <rect key="frame" x="120" y="40" width="187" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="187" id="GPo-tv-bP9"/>
+                            <constraint firstAttribute="height" constant="21" id="l7W-Fs-jEd"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="停车支付时可抵现金使用" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QBb-98-6G5">
+                        <rect key="frame" x="120" y="69" width="187" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="187" id="c9e-H3-u2r"/>
+                            <constraint firstAttribute="height" constant="21" id="qWR-u6-y8T"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="代金券金额:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDr-E6-F4p">
+                        <rect key="frame" x="120" y="10" width="187" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="187" id="8UJ-kz-G1U"/>
+                            <constraint firstAttribute="height" constant="21" id="x3W-gG-3zS"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="oT8-Bn-fli" firstAttribute="top" secondItem="prZ-co-AbG" secondAttribute="top" constant="10" id="5Ck-A7-8PV"/>
+                    <constraint firstItem="oT8-Bn-fli" firstAttribute="leading" secondItem="prZ-co-AbG" secondAttribute="leading" constant="10" id="7Gy-8p-Coh"/>
+                    <constraint firstItem="QBb-98-6G5" firstAttribute="leading" secondItem="oT8-Bn-fli" secondAttribute="trailing" constant="10" id="7r5-Kp-1Wt"/>
+                    <constraint firstItem="hDr-E6-F4p" firstAttribute="leading" secondItem="oT8-Bn-fli" secondAttribute="trailing" constant="10" id="Ftb-aO-D9x"/>
+                    <constraint firstItem="QBb-98-6G5" firstAttribute="top" secondItem="DcX-sR-c4x" secondAttribute="bottom" constant="8" id="PyF-Q9-XwT"/>
+                    <constraint firstItem="hDr-E6-F4p" firstAttribute="top" secondItem="prZ-co-AbG" secondAttribute="top" constant="10" id="V5s-Er-r0W"/>
+                    <constraint firstItem="DcX-sR-c4x" firstAttribute="leading" secondItem="oT8-Bn-fli" secondAttribute="trailing" constant="10" id="dhb-0c-IT8"/>
+                    <constraint firstItem="DcX-sR-c4x" firstAttribute="top" secondItem="hDr-E6-F4p" secondAttribute="bottom" constant="9" id="o5I-6x-WrD"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="LocationLB" destination="QBb-98-6G5" id="755-wK-36M"/>
+                <outlet property="couponValueLB" destination="hDr-E6-F4p" id="Mox-lE-DaW"/>
+                <outlet property="imgView" destination="oT8-Bn-fli" id="98b-xd-TOl"/>
+                <outlet property="timeLB" destination="DcX-sR-c4x" id="HVQ-DC-WQC"/>
+            </connections>
+            <point key="canvasLocation" x="191.5" y="261"/>
+        </tableViewCell>
+    </objects>
+</document>
