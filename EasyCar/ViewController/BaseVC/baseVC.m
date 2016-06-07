@@ -10,9 +10,7 @@
 // 设备
 #import "sys/sysctl.h"
 #import "AppDelegate.h"
-
 #import "LoginVC.h"
-
 
 
 
@@ -20,6 +18,8 @@
 {
     UIView * alertView_;
     BOOL isAlertView;
+    NSInteger controlNum ;//检查操控结果次数
+    NSString *checkOrderId;//检查操控结果订单
 }
 @end
 
@@ -443,14 +443,15 @@
         NSLog(@"%@",operation);
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         NSDictionary *dic = responseObject;
-//        NSLog(@"getDic:%@",dic);
+//        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
         if ([dic[@"status"] isEqual:@(200)]) {
             
             success(dic);
         }
         else
         {
-            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+//            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+            [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
             elseAction(dic);
         }
         
@@ -763,5 +764,138 @@
     NSRange range2 = [str rangeOfString:toStr];
     
     return [str substringWithRange:NSMakeRange(range1.location+range1.length, range2.location)];
+}
+#pragma mark 保存停车记录 type:2预约停车   1现场在线停车  0 简单版停车
+-(void)safeParkingNote:(Park *)park andParkArea:(NSString *)parkArea andParkNo:(NSString *)parkNo andControlType:(NSInteger)type andOrderId:(NSString *)orderId
+{
+    NSDictionary *parkDic = @{@"type":[NSString stringWithFormat:@"%ld",(long)park.type],
+                              @"parklat_R":[NSString stringWithFormat:@"%f",park.parklat_R],
+                              @"parklon_R":[NSString stringWithFormat:@"%f",park.parklon_R],
+                              @"appointFee":[NSString stringWithFormat:@"%f",park.appointFee],
+                              @"validDate":[NSString stringWithFormat:@"%f",park.validDate],
+                              @"parkName":park.parkName,
+                              @"ID":park.ID,
+                              @"address":park.address,
+                              @"comParkImg":park.comParkImg,
+};
+    NSDictionary *parkingNote = @{@"park":parkDic,
+                                  @"parkArea":parkArea,
+                                  @"parkNo":parkNo,
+                                  @"parkType":[NSString stringWithFormat:@"%ld",(long)type],
+                                  @"parkOrderId":orderId
+                                  };
+    [[NSUserDefaults standardUserDefaults] setObject:parkingNote forKey:@"parkingNote"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+#pragma mark 查询操作结果
+-(void)checkControlResult:(NSString *)orderId
+{
+    controlNum = 0;
+    checkOrderId = orderId;
+    [self checkControlResult];
+    
+}
+-(void)checkControlResult
+{
+    NSString *getUrl = BaseURL@"getStatus/parkInOut";
+    NSDictionary *parameterDic = @{
+                                   @"id":checkOrderId
+                                   };
+    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"getDic:%@",dic);
+        if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = dic[@"data"];
+            if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@1]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@1])) {
+                [MBProgressHUD showSuccess:@"车位下放中" toView:Window];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+                controlNum = 0 ;
+            }else if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@0]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@0]))
+            {
+                controlNum = 0 ;
+                [MBProgressHUD showError:@"请重新操作" toView:Window];
+            }else
+            {
+                if (controlNum < 3) {
+                    [self performSelector:@selector(checkControlResult) withObject:nil afterDelay:2.0f];
+                    controlNum ++ ;
+                }
+                //                [self checkControlResult:orderId];
+            }
+        }
+        
+    } elseAction:^(NSDictionary *dic) {
+        
+    } failure:^(NSError *error) {
+        
+    }];
+}
+#pragma mark 百度坐标转高德坐标
+- (CLLocationCoordinate2D)GCJ02FromBD09:(CLLocationCoordinate2D)coor
+{
+    CLLocationDegrees x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+    CLLocationDegrees x = coor.longitude - 0.0065, y = coor.latitude - 0.006;
+    CLLocationDegrees z = sqrt(x * x + y * y) - 0.00002 * sin(y * x_pi);
+    CLLocationDegrees theta = atan2(y, x) - 0.000003 * cos(x * x_pi);
+    CLLocationDegrees gg_lon = z * cos(theta);
+    CLLocationDegrees gg_lat = z * sin(theta);
+    return CLLocationCoordinate2DMake(gg_lat, gg_lon);
+}
+
+#pragma mark 高德坐标转百度坐标
+- (CLLocationCoordinate2D)BD09FromGCJ02:(CLLocationCoordinate2D)coor
+{
+    CLLocationDegrees x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+    CLLocationDegrees x = coor.longitude, y = coor.latitude;
+    CLLocationDegrees z = sqrt(x * x + y * y) + 0.00002 * sin(y * x_pi);
+    CLLocationDegrees theta = atan2(y, x) + 0.000003 * cos(x * x_pi);
+    CLLocationDegrees bd_lon = z * cos(theta) + 0.0065;
+    CLLocationDegrees bd_lat = z * sin(theta) + 0.006;
+    return CLLocationCoordinate2DMake(bd_lat, bd_lon);
+}
+#pragma mark 地球转火星
+- (CLLocation *)transformToMars:(CLLocation *)location {
+    
+    const double a = 6378245.0;
+    const double ee = 0.00669342162296594323;
+    
+    //是否在中国大陆之外
+    if ([[self class] outOfChina:location]) {
+        return location;
+    }
+    double dLat = [[self class] transformLatWithX:location.coordinate.longitude - 105.0 y:location.coordinate.latitude - 35.0];
+    double dLon = [[self class] transformLonWithX:location.coordinate.longitude - 105.0 y:location.coordinate.latitude - 35.0];
+    double radLat = location.coordinate.latitude / 180.0 * M_PI;
+    double magic = sin(radLat);
+    magic = 1 - ee * magic * magic;
+    double sqrtMagic = sqrt(magic);
+    dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * M_PI);
+    dLon = (dLon * 180.0) / (a / sqrtMagic * cos(radLat) * M_PI);
+    return [[CLLocation alloc] initWithLatitude:location.coordinate.latitude + dLat longitude:location.coordinate.longitude + dLon];
+}
+
++ (BOOL)outOfChina:(CLLocation *)location {
+    if (location.coordinate.longitude < 72.004 || location.coordinate.longitude > 137.8347) {
+        return YES;
+    }
+    if (location.coordinate.latitude < 0.8293 || location.coordinate.latitude > 55.8271) {
+        return YES;
+    }
+    return NO;
+}
+
++ (double)transformLatWithX:(double)x y:(double)y {
+    double ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * sqrt(fabs(x));
+    ret += (20.0 * sin(6.0 * x * M_PI) + 20.0 * sin(2.0 * x * M_PI)) * 2.0 / 3.0;
+    ret += (20.0 * sin(y * M_PI) + 40.0 * sin(y / 3.0 * M_PI)) * 2.0 / 3.0;
+    ret += (160.0 * sin(y / 12.0 * M_PI) + 320 * sin(y * M_PI / 30.0)) * 2.0 / 3.0;
+    return ret;
+}
+
++ (double)transformLonWithX:(double)x y:(double)y {
+    double ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * sqrt(fabs(x));
+    ret += (20.0 * sin(6.0 * x * M_PI) + 20.0 * sin(2.0 * x * M_PI)) * 2.0 / 3.0;
+    ret += (20.0 * sin(x * M_PI) + 40.0 * sin(x / 3.0 * M_PI)) * 2.0 / 3.0;
+    ret += (150.0 * sin(x / 12.0 * M_PI) + 300.0 * sin(x / 30.0 * M_PI)) * 2.0 / 3.0;
+    return ret;
 }
 @end

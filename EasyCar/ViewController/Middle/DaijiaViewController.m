@@ -2,8 +2,8 @@
 //  DaijiaViewController.m
 //  EasyCar
 //
-//  Created by zhangke on 15/5/17.
-//  Copyright (c) 2015年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//  Created by 易停车库科技 on 15/5/17.
+//  Copyright (c) 2015年 深圳市易停车库科技有限公司. All rights reserved.
 //
 
 #import "DaijiaViewController.h"

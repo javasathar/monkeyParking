@@ -82,7 +82,9 @@
 
 #pragma mark 点击充值
 - (IBAction)onChongZhi:(id)sender {
-    
+    [MBProgressHUD showMessag:@"暂未开放" toView:Window];
+    return;
+#warning 暂未开放
     if (!_sMoneyBtn) {
         
         [MBProgressHUD showError:@"请选择充值金额" toView:Window];

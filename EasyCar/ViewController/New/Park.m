@@ -21,4 +21,22 @@ MJExtensionLogAllProperties
              };
 }
 
+-(id)initWithDic:(NSDictionary *)dic
+{
+    self = [super init];
+    if (self) {
+        NSDictionary *parkDic = dic[@"park"];
+        _type = [parkDic[@"type"] integerValue];
+        _parklat_R = [parkDic[@"parklat_R"] floatValue];
+        _parklon_R = [parkDic[@"parklon_R"] floatValue];
+        _appointFee = [parkDic[@"appointFee"] floatValue];
+        _validDate = [parkDic[@"validDate"] floatValue];
+        _parkName = parkDic[@"parkName"];
+        _ID = parkDic[@"ID"];
+        _address = parkDic[@"address"];
+        _comParkImg = parkDic[@"comParkImg"];
+    }
+    return self;
+}
+
 @end

@@ -11,7 +11,9 @@
 #import "MySpaceTableViewCell.h"
 #import "WoYaoTingCheVC.h"
 #import "TransferViewController.h"
-@interface MySpaceViewController ()<UITableViewDelegate,UITableViewDataSource>
+#import <CoreLocation/CoreLocation.h>
+
+@interface MySpaceViewController ()<UITableViewDelegate,UITableViewDataSource,CLLocationManagerDelegate>
 @property (nonatomic ,strong)NSMutableArray *dataArr;
 @property (nonatomic ,strong)UITableView *dataTabel;
 @end
@@ -19,6 +21,12 @@
 @implementation MySpaceViewController
 {
     UIButton *historyBtn;
+    CLLocationManager *_locationManager;//定位
+    CLLocation *nowLocation;//位置
+    Park *nestestPark; //最近的停车场
+    NSNumber *_operation;//操作模式
+    UIButton *_clickBtn;//点击的按钮
+    NSInteger locationNum;//只需定位一次
 }
 -(UITableView *)dataTabel
 {
@@ -143,49 +151,42 @@
 #pragma mark 点击cell
 -(void)cellClickBtnClick:(UIButton *)sender
 {
-    UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"操控车库" message:@"停取车" preferredStyle:UIAlertControllerStyleAlert];
+    MySpaceModel *model = self.dataArr[sender.tag - 20000];
+    _clickBtn = sender;
+    
+    UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"操控车库" message:[NSString stringWithFormat:@"区域：%@  车位号：%@",model.parkArea,model.parkNo] preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     UIAlertAction *handleAction1 = [UIAlertAction actionWithTitle:@"停车" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self mySpaceParkingOrPickUp:0 and:sender];
+        _operation = @1;
+        [self mySpaceParkingOrPickUp];
     }];
     UIAlertAction *handleAction2 = [UIAlertAction actionWithTitle:@"取车" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self mySpaceParkingOrPickUp:1 and:sender];
+        _operation = @2;
+        [self mySpaceParkingOrPickUp];
 
     }];
     [alertCtl addAction:cancelAction];
     [alertCtl addAction:handleAction1];
     [alertCtl addAction:handleAction2];
 
-    [self presentViewController:alertCtl animated:YES completion:nil];
+    if([model.result isEqualToNumber:@4])
+    {
+        [MBProgressHUD showResult:NO text:@"该车位已转租" delay:1.0f];
+    }else
+    {
+        [self presentViewController:alertCtl animated:YES completion:nil];
+
+    }
 }
 #pragma mark 专用车位停取车
--(void)mySpaceParkingOrPickUp:(NSInteger)num and:(UIButton *)sender
+-(void)mySpaceParkingOrPickUp
 {
-    NSNumber *opration = @1;
-    if (num) {
-        opration = @2;
-    }
-    NSString *getUrl = BaseURL@"remoteParkOrTakeCar";
-    MySpaceModel *model = self.dataArr[sender.tag - 20000];
-    NSDictionary *parameterDic = @{
-                                   @"memberId":self.user.userID,
-                                   @"parkId":model.parkId,
-//                                   @"parkArea":model.parkArea,
-                                   @"parkArea":@"A",
-                                   @"spaceNo":model.parkNo,
-                                   @"operation":opration
-                                   
-                                   };
-    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-        [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
-    } elseAction:^(NSDictionary *dic) {
-        
-    } failure:^(NSError *error) {
-        
-    }];
+    locationNum = 0 ;
+    [self checkDistancePass];
 }
+
 #pragma mark 点击cell左边
 -(void)cellSelectBtnClick:(UIButton*)sender
 {
@@ -214,11 +215,20 @@
                                    @"startDay":[Unit getTimeWithFormat:@"yyyyMMdd"],
                                    @"endDay":@"20160610"
                                    };
-    NSLog(@"parameterDic:%@",parameterDic);
+//    NSLog(@"parameterDic:%@",parameterDic);
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"getDic%@",dic);
         [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
-        if (![dic[@"data"] isEqual:[NSNull null]]) {
-            [self checkRentTranResult:dic[@"data"]];
+        if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+            [self checkRentTranResult:dic[@"data"][@"orderid"]];
+        
+        
+        //保存转租记录到本地
+        NSUserDefaults *users = [NSUserDefaults standardUserDefaults];
+        NSMutableArray *rentTranList = [NSMutableArray arrayWithArray:[users valueForKey:@"rentTranList"]];
+        [rentTranList addObject:@{@"parkSpaceId":model.parkspaceId,@"orderId":dic[@"data"][@"orderid"]}];
+            [users setObject:rentTranList forKey:@"rentTranList"];
+            [users synchronize];
         }
     } elseAction:^(NSDictionary *dic) {
         
@@ -234,6 +244,7 @@
                                    @"id":orderID
                                    };
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"getDic%@",dic);
         [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self performSelector:@selector(requestData) withObject:nil afterDelay:1.0f];
@@ -253,29 +264,44 @@
         return;
     }
     NSString *getUrl = BaseURL@"rentTranCancel";
+    NSDictionary *parameterDic = nil;
     MySpaceModel *model = self.dataArr[historyBtn.tag - 10000];
     if (![model.result isEqual:@4]) {
         [MBProgressHUD showResult:YES text:@"已取消转租" delay:1.0f];
         
     }
-    NSDictionary *parameterDic = @{
-                                   @"id":model.parkspaceId,
-                                   @"supsid":model.orderId
-                                   };
-//    NSLog(@"parameterDic:%@",parameterDic);
-    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-        [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self requestData];
-            [self performSelector:@selector(requestData) withObject:nil afterDelay:1.0f];
-        });
-    } elseAction:^(NSDictionary *dic) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self performSelector:@selector(requestData) withObject:nil afterDelay:1.0f];
-        });
-    } failure:^(NSError *error) {
-        
-    }];
+    
+    NSUserDefaults *users = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *rentTranList = [NSMutableArray arrayWithArray:[users valueForKey:@"rentTranList"]];
+    for (NSDictionary *dict in rentTranList) {
+        if ([dict[@"parkSpaceId" ] isEqualToString:model.parkspaceId]) {
+            parameterDic = @{
+                                           @"id":model.parkspaceId,
+                                           @"supsid":dict[@"orderId"]
+                                           };
+        }
+    }
+    if (!parameterDic) {
+        [MBProgressHUD showError:@"没有转租记录" toView:Window];
+    }else
+    {
+        //    NSLog(@"parameterDic:%@",parameterDic);
+        [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+            [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //            [self requestData];
+                [self performSelector:@selector(requestData) withObject:nil afterDelay:2.0f];
+            });
+        } elseAction:^(NSDictionary *dic) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self performSelector:@selector(requestData) withObject:nil afterDelay:2.0f];
+            });
+        } failure:^(NSError *error) {
+            
+        }];
+    }
+    
+
 }
 
 /*
@@ -287,5 +313,135 @@
  // Pass the selected object to the new view controller.
  }
  */
+#pragma mark 操控车库
+-(void)controlParking
+{
+    MySpaceModel *model = self.dataArr[_clickBtn.tag - 20000];
+    
+    NSString *getUrl = BaseURL@"remoteParkOrTakeCar";
+    NSDictionary *parameterDic = @{
+                                   @"memberId":self.user.userID,
+                                   @"parkId":model.parkId,
+                                   @"parkArea":model.parkArea.length > 1 ?model.parkArea:[NSString stringWithFormat:@"%@0",model.parkArea],
+                                   //                                   @"parkArea":@"A0",
+                                   @"spaceNo":model.parkNo,
+                                   @"operation":_operation
+                                   
+                                   };
+    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"专用车位停取车：%@",dic);
+        if([dic[@"data"] isKindOfClass:[NSDictionary class]])
+        {
+            [self checkControlResult:dic[@"data"][@"orderid"]];
+            
+        }
+        [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
+    } elseAction:^(NSDictionary *dic) {
+        
+    } failure:^(NSError *error) {
+        
+    }];
+
+}
+#pragma mark 判断操作距离
+-(void)checkDistancePass
+{
+    //定位管理器
+    _locationManager=[[CLLocationManager alloc]init];
+    if ([CLLocationManager locationServicesEnabled]) {
+        [_locationManager requestWhenInUseAuthorization];
+        
+        //设置代理
+        _locationManager.delegate=self;
+        //设置定位精度
+        _locationManager.desiredAccuracy=kCLLocationAccuracyBest;
+        //定位频率,每隔多少米定位一次
+        CLLocationDistance distance=10.0;//十米定位一次
+        _locationManager.distanceFilter=distance;
+        //启动跟踪定位
+        [_locationManager startUpdatingLocation];
+    }
+    
+}
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    nowLocation = [locations firstObject];//取出第一个位置
+    
+    // 收到地球后立即转火星
+    nowLocation = [self transformToMars:nowLocation];// 转
+    CLLocationCoordinate2D coordinate=nowLocation.coordinate;//位置坐标
+    NSLog(@"经度：%f,纬度：%f,海拔：%f,航向：%f,行走速度：%f",coordinate.longitude,coordinate.latitude,nowLocation.altitude,nowLocation.course,nowLocation.speed);
+    //如果不需要实时定位，使用完即使关闭定位服务
+    [_locationManager stopUpdatingLocation];
+    
+    //    CLLocation* dist=[[CLLocation alloc] initWithLatitude:_park.parklat_R longitude:_park.parklon_R];
+    //    if ([nowLocation distanceFromLocation:dist] < 50) {
+    //        [self controlParking];
+    //    }else
+    //    {
+    //        [MBProgressHUD showResult:NO text:@"安全起见，请在车库旁操作" delay:2.0f];
+    //    }
+    if(locationNum == 0)
+    {
+        locationNum = 1;
+        [self checkNestestParkingFromNet];
+
+    }
+}
+-(void)checkNestestParkingFromNet
+{
+    NSString *getUrl = BaseURL@"parkList";
+    NSDictionary *parameterDic = @{
+                                   @"positionX":[NSString stringWithFormat:@"%f",nowLocation.coordinate.latitude],
+                                   @"positionY":[NSString stringWithFormat:@"%f",nowLocation.coordinate.longitude],
+                                   @"pageSize":[NSString stringWithFormat:@"%d",10],
+                                   @"pageNo":[NSString stringWithFormat:@"%ld",(long)1]
+                                   };
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSDictionary *dic = responseObject;
+        //        NSLog(@"dic:%@",dic);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            
+            [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+            // 建模（车库）
+            for (NSDictionary *tempDic in dic[@"data"]) {
+                //                NSLog(@"parkList:%@",tempDic);
+                Park *p = [[Park alloc] mj_setKeyValues:tempDic];
+                
+                //                NSLog(@"%f",[nowLocation distanceFromLocation:dist]);
+                MySpaceModel *model = self.dataArr[_clickBtn.tag - 20000];
+
+                if([p.ID isEqualToString:model.parkId]){
+                    CLLocationCoordinate2D tempCoo = CLLocationCoordinate2DMake(p.parklat_R, p.parklon_R);
+                    tempCoo = [self GCJ02FromBD09:tempCoo];
+                    
+                    p.parklat_R = tempCoo.latitude;
+                    p.parklon_R = tempCoo.longitude;
+                    
+                    CLLocation* dist=[[CLLocation alloc] initWithLatitude:p.parklat_R longitude:p.parklon_R];
+                    nestestPark = p;
+                    if([nowLocation distanceFromLocation:dist] < k_allDistance){
+                        [self controlParking];
+                    }else
+                    {
+                        [MBProgressHUD showMessag:@"安全起见，请离停车场近点" toView:Window];
+                        
+                    }
+                    break;
+                }
+            }
+            if (!nestestPark) {
+                [MBProgressHUD showMessag:@"没有找到停车场" toView:Window];
+            }
+        }else
+        {
+            [MBProgressHUD showError:dic[@"msg"] toView:self.view];
+            
+        }
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD showError:@"网络加载出错" toView:self.view];
+    }];
+}
 
 @end

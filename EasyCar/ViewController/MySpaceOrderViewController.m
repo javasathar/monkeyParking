@@ -44,12 +44,12 @@
 }
 - (void)chosseTimeAction:(id)sender {
     _rusult = [self.pickerView selectedRowInComponent:0];
-//    NSLog(@"%ld",result);
+    //    NSLog(@"%ld",result);
     if (self.monthArr[_rusult]) {
         _timeLong.text = self.monthArr[_rusult];
-
+        
     }
-//    NSLog(@"选中%@",self.monthArr[result]);
+    //    NSLog(@"选中%@",self.monthArr[result]);
     _totalPrice.text = [NSString stringWithFormat:@"%ld",(long)(800 * (++_rusult))];
     
     [_pickerView removeFromSuperview];
@@ -72,7 +72,7 @@
                       @"十个月",
                       @"十一个月",
                       @"十二个月"
-                       ];
+                      ];
     }
     return _monthArr;
 }
@@ -161,7 +161,7 @@
 #pragma mark - 当用户选中UIPickerViewDataSource中指定列和列表项时激发该方法
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-//    self.timeLong = self.monthArr[row];
+    //    self.timeLong = self.monthArr[row];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -179,99 +179,120 @@
  */
 
 - (IBAction)payBtn:(id)sender {
-//    _checkOrderId = @"8aafdae854c6d4850154c6d5542d0000";
-//    checkNum = 1;
-//    [self checkOrderEffectiveness];
+    //    _checkOrderId = @"8aafdae854c6d4850154c6d5542d0000";
+    //    checkNum = 1;
+    //    [self checkOrderEffectiveness];
     
     NSString *getUrl = BaseURL@"rentOrder";
     NSDictionary *parameterDic = @{@"memberId":[UserManager manager].userID,
-//                                   @"parkId":@"402880f350ef8c640150efac6a560007",
+                                   //                                   @"parkId":@"402880f350ef8c640150efac6a560007",
                                    @"parkId":_park.ID,
                                    @"carPlate":_car.carPlate,
                                    @"rentTime":[NSString stringWithFormat:@"%ld",(long)_rusult],
-//                                   @"parkNo":_parkNO,
-                                   @"parkArea":_parkArea,
+                                   //                                   @"parkNo":_parkNO,
+                                   @"parkArea":_parkArea.length > 1 ?_parkArea:[NSString stringWithFormat:@"%@0",_parkArea],
                                    @"rentMoney":@"0.01",
-};
-        [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-            NSDictionary *dic = (NSDictionary *)responseObject;
-            NSLog(@"结果：%@  %@",dic,dic[@"msg"]);
-    
-            if ([dic[@"status"] isEqual:@200]) {
-                [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
-                if(![dic[@"data"] isEqual:[NSNull null]])
-                {
-                    _checkOrderId = dic[@"data"];
-    
-                    checkNum = 1;
-                    
-                    [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
-                }
-    
-            }else{
-    //            NSLog(@"已预约：%@",dic);
-    
-                [MBProgressHUD showError:dic[@"msg"] toView:Window];
+                                   };
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSDictionary *dic = (NSDictionary *)responseObject;
+        NSLog(@"结果：%@  %@",dic,dic[@"msg"]);
+        
+        if ([dic[@"status"] isEqual:@200]) {
+            //                [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
+            if([dic[@"data"] isKindOfClass:[NSDictionary class]])
+            {
+                _checkOrderId = dic[@"data"][@"orderid"];
+                
+                checkNum = 1;
+                
+                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
             }
-        } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-            [MBProgressHUD showError:@"预约失败" toView:Window];
-        }];
-
+            
+        }else{
+            //            NSLog(@"已预约：%@",dic);
+            
+            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+        }
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        [MBProgressHUD showError:@"预约失败" toView:Window];
+    }];
+    
 }
 -(void)checkOrderEffectiveness
 {
     
-//    [self showPayAlertWithPrice:@"0.01" and:_checkOrderId];
+    //    [self showPayAlertWithPrice:@"0.01" and:_checkOrderId];
     
-        NSString *getUrl = BaseURL@"getStatus/rentOrder";
-        NSDictionary *parametersDic = @{@"id":_checkOrderId};
-    //    NSLog(@"%@%@",getUrl,parametersDic);
-        [MBProgressHUD showAnimateHUDAddedTo:Window text:@"正在下单"];
-        [self getRequestURL:getUrl parameters:parametersDic success:^(NSDictionary *dic) {
+    NSString *getUrl = BaseURL@"getStatus/rentOrder";
+    NSDictionary *parametersDic = @{@"id":_checkOrderId};
+        NSLog(@"%@%@",getUrl,parametersDic);
+    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parametersDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"%@",operation);
+        NSDictionary *dic = responseObject;
+        //        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            
             NSLog(@"订单有效：%@",dic);
-    //        YuYueOrderViewController *vc = [[YuYueOrderViewController alloc] init];
-    //        vc.orderID = orderID;
-    //        [self.navigationController pushViewController:vc animated:YES];
+            //        YuYueOrderViewController *vc = [[YuYueOrderViewController alloc] init];
+            //        vc.orderID = orderID;
+            //        [self.navigationController pushViewController:vc animated:YES];
             NSDictionary *dataDic = dic[@"data"];
             if(![dataDic isEqual:[NSNull null]])
             {
                 if ([dataDic[@"status"] isEqual:@1]) {
+                    [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                    
                     [MBProgressHUD showSuccess:@"下单成功" toView:Window];
                     
                     [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
                 }else
                 {
-                    if (checkNum < 5) {
+                    if (checkNum < 3) {
                         [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
-                        [MBProgressHUD showHUDAddedTo:Window animated:YES];
-                        
+                    }else if(checkNum == 3){
+                        //                [MBProgressHUD showSuccess:@"服务器订单数据为空" toView:Window];
+                        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                        [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
                     }
-                    [MBProgressHUD showError:@"下单失败" toView:Window];
                 }
-
+                
             }else
             {
-                if (checkNum < 5) {
+                if (checkNum < 3) {
                     [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
-                    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+                }else if(checkNum == 3){
+                    [MBProgressHUD hideAllHUDsForView:Window animated:YES];
                     
+                    [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
                 }
-                [MBProgressHUD showSuccess:@"服务器订单数据为空" toView:Window];
-    
+                
             }
-        } elseAction:^(NSDictionary *dic) {
-            NSLog(@"订单无效：%@",dic);
-            if (checkNum < 5) {
-                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
-                [MBProgressHUD showHUDAddedTo:Window animated:YES];
-    
-            }
-            [MBProgressHUD showError:dic[@"msg"] toView:Window];
-    
-        } failure:^(NSError *error) {
             
-        }];
-
+        }
+        else
+        {
+            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+            if (checkNum < 3) {
+                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
+            }else if(checkNum == 3){
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                
+                [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
+            }
+            
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",operation);
+        
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD showError:@"网络加载出错" toView:Window];
+    }];
+    
+    
+    
 }
 #pragma mark 弹出支付弹框
 -(void)showPayAlertWithPrice:(NSString *)truePrice and:(NSString *)orderID
@@ -341,31 +362,31 @@
     //    _totalPrice.text = totalPrice > 0 ? [NSString stringWithFormat:@"使用优惠券后还需支付%.1f元",totalPrice] : @"使用优惠券后可免费预约";
     _totalPrice.hidden = NO;
     
-        // 没有传入nil订单号则在此生成  作废
-        //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
-        // 调用支付宝        
-        NSString *postURL = PayURL@"coupon";
-        NSDictionary *parameterDic = @{@"orderId":otherOrder.orderID,
-                                       @"orderType":otherOrder.payType,
-                                       @"couponId":_coupon.ID,
-                                       };
-        [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息：%@",dic);
-            if (![dic[@"data"] isEqual:[NSNull null]]) {
-                NSLog(@"%@",dic[@"data"]);
-                //                [self alipayWithServerStr:dic[@"data"]];
-            }
-            
-            
-        } elseAction:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息请求异常：%@",dic);
-            
-        } failure:^(NSError *error) {
-            
-        }];
-
+    // 没有传入nil订单号则在此生成  作废
+    //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
+    // 调用支付宝
+    NSString *postURL = PayURL@"coupon";
+    NSDictionary *parameterDic = @{@"orderId":otherOrder.orderID,
+                                   @"orderType":otherOrder.payType,
+                                   @"couponId":_coupon.ID,
+                                   };
+    [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息：%@",dic);
+        if (![dic[@"data"] isEqual:[NSNull null]]) {
+            NSLog(@"%@",dic[@"data"]);
+            //                [self alipayWithServerStr:dic[@"data"]];
+        }
+        
+        
+    } elseAction:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息请求异常：%@",dic);
+        
+    } failure:^(NSError *error) {
+        
+    }];
+    
     
 }
 #pragma mark 收到支付结果(仅限支付宝微信。余额支付有单独方法)
@@ -374,7 +395,7 @@
     [super payResultHandle:notification];
     if ([notification.object isEqual: @1]) {
         
-//        _payType = notification.userInfo[@"payType"];
+        //        _payType = notification.userInfo[@"payType"];
         NSLog(@"VC：支付成功");
         //        [self requestAppointPark:nil];
         [self performSelector:@selector(afterPaySucess) withObject:nil afterDelay:1];
@@ -390,6 +411,6 @@
 -(void)left
 {
     [super left];
-    checkNum = 5;
+    checkNum = 3;
 }
 @end

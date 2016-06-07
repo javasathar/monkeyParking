@@ -86,6 +86,7 @@
 {
     
     [UserManager manager].isLogin = NO;
+    [UserManager manager].userID = nil;
     // 清除消息
     DELE.unReadCount = 0;
     

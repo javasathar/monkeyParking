@@ -33,13 +33,18 @@
 #import "ParkingSpaceAreaViewController.h"
 #import "ParkingYuYueViewController.h"
 #import "AppointOrderModel.h"
-@interface HomeViewController ()<SDCycleScrollViewDelegate,UMSocialUIDelegate>
+#import <CoreLocation/CoreLocation.h>
+@interface HomeViewController ()<SDCycleScrollViewDelegate,UMSocialUIDelegate,CLLocationManagerDelegate>
 {
     SDCycleScrollView *_cycleScrollView; //轮播
     UIScrollView *_mainScrollView; //已停用
     UIImageView *_needle;  //指针
     NSTimer *_needleTimer;  //定时旋转指针
     NSInteger _revolve;
+    CLLocationManager *_locationManager;//定位
+    CLLocation *nowLocation;//位置
+    Park *nestestPark; //最近的停车场
+    NSInteger locationNum;//只需定位一次
 }
 @property (nonatomic ,strong)FileData *fileData;
 @end
@@ -64,13 +69,13 @@
     //    rightImg = [[UIImage imageWithData:imageData scale:1.1] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];// 右边的图片稍微变小一点
     //    [self.nav.rightImageBtn setImage:rightImg forState:UIControlStateNormal];
     //    self.nav.rightImageBtn.tintColor = [UIColor whiteColor];
-
+    
     UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [leftBtn setImage:[UIImage imageNamed:@"Shape-8"] forState:UIControlStateNormal];
     [leftBtn setFrame:CGRectMake(20, 34,20, 20)];
     [leftBtn addTarget:self action:@selector(leftBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [self.nav addSubview:leftBtn];
-
+    
     
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
@@ -83,7 +88,7 @@
     _mainScrollView.contentOffset = CGPointMake(0, changeY);
     
     [self checkUpVersion];
-
+    
 }
 
 
@@ -109,7 +114,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
+    
     //    [self.nav.rightImageBtn showBadgeWithStyle:WBadgeStyleNumber value:DELE.unReadCount animationType:WBadgeAnimTypeNone];
     
 }
@@ -150,7 +155,7 @@
 #pragma mark 预约停车
 - (void)stopCarAction
 {
-
+    
     [_needle.layer removeAllAnimations];
     [UIView animateWithDuration:0.2f animations:^{
         
@@ -262,7 +267,7 @@
         }
         
     }];
-
+    
 }
 #pragma mark 我的订单
 - (void)myOrder
@@ -272,7 +277,7 @@
     //    [self.navigationItem setBackBarButtonItem:backItem];
     //    [self.navigationController pushViewController:aboutVC animated:YES];
     [_needle.layer removeAllAnimations];
-
+    
     [UIView animateWithDuration:0.2f animations:^{
         
         _needle.transform = CGAffineTransformMakeRotation(-89 * (M_PI / 180.0f));
@@ -298,7 +303,7 @@
                 }];
             }
         }
-
+        
     }];
     
     
@@ -308,18 +313,19 @@
 -(NSString *)checkHaveAppointment:(NSNumber *)opration
 {
     //测试用
-//    ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
-//    vc.operateState = 1;
-//    vc.opration = opration;
-//    [self.navigationController pushViewController:vc animated:YES];
+    //    ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
+    //    vc.operateState = 1;
+    //    vc.opration = opration;
+    //    [self.navigationController pushViewController:vc animated:YES];
     
     NSString *getUrl = BaseURL@"myAppointOrderList";
+    NSLog(@"userID:%@",self.user.userID);
     NSDictionary *parameterDic = @{
                                    @"memberId":self.user.userID
                                    };
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
         NSLog(@"检查是否有预约:%@",dic);
-        if (![dic[@"data"] isEqual:[NSNull null]]) {
+        if (![dic[@"data"] isEqual:[NSNull null]])  {
             NSArray *dataArr = dic[@"data"];
             if (dataArr.count > 0) {
                 ParkingYuYueViewController *vc = [[ParkingYuYueViewController alloc] init];
@@ -329,10 +335,16 @@
             }
         }
     } elseAction:^(NSDictionary *dic) {
-        ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
-        vc.operateState = 1;
-        vc.opration = opration;
-        [self.navigationController pushViewController:vc animated:YES];
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        
+        //        ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
+        //        vc.operateState = 1;
+        //        vc.opration = opration;
+        //        [self.navigationController pushViewController:vc animated:YES];
+        //
+        locationNum = 0;
+        [self checkNestestParking];
+        
     } failure:^(NSError *error) {
         
     }];
@@ -341,24 +353,21 @@
 #pragma mark 我要停车2016
 -(void)parkingCar
 {
-    if ([CGTool wasLogin]) {
-        if ([[CGTool shareInitial] isMonkeyWIFI]) {
-            ParkingViewController *vc = [ParkingViewController new];
-            [self.navigationController pushViewController:vc animated:YES];
-        }else
-        {
-            [self checkHaveAppointment:@1];
-            
-        }
-
-    }
-    else
+    if ([[CGTool shareInitial] isMonkeyWIFI] && [CGTool wasLogin]) {
+        ParkingViewController *vc = [ParkingViewController new];
+        [self.navigationController pushViewController:vc animated:YES];
+    }else if(!self.user.userID)
     {
+        
         [self showFunctionAlertWithTitle:@"温馨提示" message:@"您尚未登录" functionName:@"点击登录" Handler:^{
-            [self loginBeforePushVC:NSStringFromClass([ParkingViewController class])];
+            //[self loginBeforePushVC:NSStringFromClass([ParkingViewController class])];
+            [self gotoLoginVC];
         }];
+    }else
+    {
+        [self checkHaveAppointment:@1];
+        
     }
-
 }
 #pragma mark 我要取车2016
 -(void)pickupCar
@@ -369,30 +378,130 @@
         _needle.transform = CGAffineTransformMakeRotation(0 );
         
     }completion:^(BOOL finished) {
-        if ([CGTool wasLogin]) {
-            if ([[CGTool shareInitial] isMonkeyWIFI]) {
-                PickUpViewController *vc = [PickUpViewController new];
-                [self.navigationController pushViewController:vc animated:YES];
-            }else
-            {
-//                [self checkHaveAppointment:@2];
+        if ([[CGTool shareInitial] isMonkeyWIFI] && [CGTool wasLogin]) {
+            PickUpViewController *vc = [PickUpViewController new];
+            [self.navigationController pushViewController:vc animated:YES];
+        }else if(!self.user.userID)
+        {
+            [self showFunctionAlertWithTitle:@"温馨提示" message:@"您尚未登录" functionName:@"点击登录" Handler:^{
+                //                [self loginBeforePushVC:NSStringFromClass([PickUpViewController class])];
+                [self gotoLoginVC];
+                
+            }];
+            
+        }else
+        {
+            //                [self checkHaveAppointment:@2];
+            
+            NSDictionary *parkingNote = [[NSUserDefaults standardUserDefaults]objectForKey:@"parkingNote"];
+            if (parkingNote) {
                 ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
                 vc.operateState = 1;
                 vc.opration = @2;
+                Park *park = [[Park alloc] initWithDic:parkingNote];
+                vc.park = park;
+                vc.parkingNote = parkingNote;
                 [self.navigationController pushViewController:vc animated:YES];
+            }else
+            {
+                [MBProgressHUD showResult:NO text:@"没有停车记录" delay:1.0f];
+                
             }
-
         }
-        else
-        {
-            [self showFunctionAlertWithTitle:@"温馨提示" message:@"您尚未登录" functionName:@"点击登录" Handler:^{
-                [self loginBeforePushVC:NSStringFromClass([PickUpViewController class])];
-            }];
-        }
-     }];
-
+    }];
+}
+#pragma mark 搜索最近停车场
+-(void)checkNestestParking
+{
+    //定位管理器
+    _locationManager=[[CLLocationManager alloc]init];
+    if ([CLLocationManager locationServicesEnabled]) {
+        [_locationManager requestWhenInUseAuthorization];
+        
+        //设置代理
+        _locationManager.delegate=self;
+        //设置定位精度
+        _locationManager.desiredAccuracy=kCLLocationAccuracyBest;
+        //定位频率,每隔多少米定位一次
+        CLLocationDistance distance=10.0;//十米定位一次
+        _locationManager.distanceFilter=distance;
+        //启动跟踪定位
+        [_locationManager startUpdatingLocation];
+    }
+    
 }
 
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    nowLocation = [locations firstObject];//取出第一个位置
+    
+    // 收到地球后立即转火星
+    nowLocation = [self transformToMars:nowLocation];// 转
+    
+    CLLocationCoordinate2D coordinate=nowLocation.coordinate;//位置坐标
+    NSLog(@"经度：%f,纬度：%f,海拔：%f,航向：%f,行走速度：%f",coordinate.longitude,coordinate.latitude,nowLocation.altitude,nowLocation.course,nowLocation.speed);
+    
+    //如果不需要实时定位，使用完即使关闭定位服务
+    [_locationManager stopUpdatingLocation];
+    if (locationNum == 0) {
+        locationNum = 1;
+        [self checkNestestParkingFromNet];
+    }
+}
+-(void)checkNestestParkingFromNet
+{
+    NSString *getUrl = BaseURL@"parkList";
+    NSDictionary *parameterDic = @{
+                                   @"positionX":[NSString stringWithFormat:@"%f",nowLocation.coordinate.latitude],
+                                   @"positionY":[NSString stringWithFormat:@"%f",nowLocation.coordinate.longitude],
+                                   @"pageSize":[NSString stringWithFormat:@"%d",10],
+                                   @"pageNo":[NSString stringWithFormat:@"%ld",(long)1]
+                                   };
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSDictionary *dic = responseObject;
+        //        NSLog(@"dic:%@",dic);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            
+            [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+            // 建模（车库）
+            for (NSDictionary *tempDic in dic[@"data"]) {
+                //                NSLog(@"parkList:%@",tempDic);
+                Park *p = [[Park alloc] mj_setKeyValues:tempDic];
+                CLLocationCoordinate2D tempCoo = CLLocationCoordinate2DMake(p.parklat_R, p.parklon_R);
+                tempCoo = [self GCJ02FromBD09:tempCoo];
+                NSLog(@"%f   %f",p.parklat_R,tempCoo.latitude);
+                p.parklat_R = tempCoo.latitude;
+                p.parklon_R = tempCoo.longitude;
+                
+                CLLocation* dist=[[CLLocation alloc] initWithLatitude:p.parklat_R longitude:p.parklon_R];
+                // 比较出一定距离内的停车场  暂定50m
+                if ([nowLocation distanceFromLocation:dist] < k_allDistance ) {
+                    //if([p.parkName isEqualToString:@"广州市钟村医院停车场"]){
+#warning 测试用
+                    NSLog(@"%f",[nowLocation distanceFromLocation:dist]);
+                    
+                    ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
+                    vc.operateState = 1;
+                    vc.opration = @1;
+                    vc.park = p;
+                    nestestPark = p;
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
+            }
+            if (!nestestPark) {
+                [MBProgressHUD showMessag:@"200m内没有立体车库" toView:Window];
+            }
+        }else
+        {
+            [MBProgressHUD showError:dic[@"msg"] toView:self.view];
+            
+        }
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD showError:@"网络加载出错" toView:self.view];
+    }];
+}
 #pragma mark 点击正中间猴子
 -(void)clickMonkey
 {
@@ -436,12 +545,12 @@
             break;
         case 1:
         {
-
+            
         }
             break;
         case 2:
         {
-
+            
         }
             break;
         case 3:
@@ -467,16 +576,16 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-//    self.navigationController.navigationBar.hidden = YES;
+    //    self.navigationController.navigationBar.hidden = YES;
     self.navigationController.navigationBar.barTintColor = RGBA(50, 129, 255, 1);
     [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:19],
                                                                       NSForegroundColorAttributeName:[UIColor whiteColor]}];
     
-
     
     
     
-
+    
+    
     if (!isIphone4s) {
         NSArray *images = @[[UIImage imageNamed:@"img15"],
                             //                        [UIImage imageNamed:@"img13"],
@@ -507,7 +616,7 @@
         [self.view addSubview:waveImage];
     }
     
-
+    
     UIView *meterView = [[UIView alloc] initWithFrame:CGRectMake(0, Heigth - 70 - Width, Width, Width)];
     [self.view addSubview:meterView];
     
@@ -542,7 +651,7 @@
     UILabel *pickCarLabel;
     if (isIphone6P) {
         pickCarLabel = [[UILabel alloc] initWithFrame:CGRectMake(pickCarBtn.width * 0.3, 0 , pickCarBtn.width * 0.4, pickCarBtn.height * 0.8)];
-        pickCarLabel.font = [UIFont systemFontOfSize:16];
+        pickCarLabel.font = [UIFont systemFontOfSize:15];
         
     }else
     {
@@ -550,11 +659,11 @@
         pickCarLabel.font = [UIFont systemFontOfSize:13];
         
     }
-
+    
     pickCarLabel.textAlignment = NSTextAlignmentCenter;
     pickCarLabel.textColor = RGBA(46, 46, 46, 1);
     pickCarLabel.text = @"大圣\n取车";
-
+    
     pickCarLabel.numberOfLines = 0;
     [pickCarBtn addSubview:pickCarLabel];
     
@@ -640,7 +749,7 @@
             _revolve = 1;
         }];
     }
-
+    
 }
 
 #pragma mark - 监听回调更新小红点
@@ -709,7 +818,7 @@
         NSLog(@"网络地图版本号：%@",dic[@"map"]);
         NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
         NSString *appVersion = [infoDic objectForKey:@"CFBundleShortVersionString"];
-//        NSLog(@"%@",dic);
+        //        NSLog(@"%@",dic);
         if (![dic[@"version"] isEqualToString:appVersion]) {
             for (NSDictionary *dict in dic[@"question"]) {
                 if ([appVersion isEqualToString:dict[@"version"]]) {
@@ -745,7 +854,7 @@
 -(void)leftBtnClick
 {
     SetUPViewController *vc = [[SetUPViewController alloc] init];
-
+    
     [self.navigationController pushViewController:vc animated:YES];
 }
 @end

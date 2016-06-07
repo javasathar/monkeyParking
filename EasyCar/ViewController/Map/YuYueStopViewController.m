@@ -3,7 +3,7 @@
 //  EasyCar
 //
 //  Created by zhangke on 15/5/20.
-//  Copyright (c) 2015年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//  Copyright (c) 2015年 深圳市易停车库科技有限公司. All rights reserved.
 //  涉及支付
 
 #import "YuYueStopViewController.h"
@@ -404,16 +404,26 @@
             [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
             if(![dic[@"data"] isEqual:[NSNull null]])
             {
-                _checkOrderId = dic[@"data"];
+                if (dic[@"data"]) {
+                    if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+                        _checkOrderId = dic[@"data"][@"orderid"];
+
+                    }else
+                    {
+                        _checkOrderId = dic[@"data"];
+
+                    }
+                }
                 
                 checkNum = 1;
                 [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
             }
             
-        }else if([dic[@"status"] isEqual:@500])
-        {
-            [self showFunctionAlertWithTitle:@"是否重新预约" message:dic[@"msg"] functionName:@"重新预约" Handler:^{
-                [self checkHaveAppointment:nil];
+        }
+//        else if([dic[@"status"] isEqual:@500])
+//        {
+//            [self showFunctionAlertWithTitle:@"是否重新预约" message:dic[@"msg"] functionName:@"重新预约" Handler:^{
+//                [self checkHaveAppointment:nil];
 
 //                    NSString *getUrl = BaseURL@"appointCancel";
 //                    NSDictionary *parameterDic = @{@"memberId":self.user.userID,
@@ -428,8 +438,8 @@
 //                        
 //                    }];
 //                [self yuyueSpace];
-            }];
-        }
+//            }];
+//        }
         else{
 //            NSLog(@"已预约：%@",dic);
 
@@ -459,6 +469,7 @@
                                                    };
                     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
                         NSLog(@"取消订单成功:%@",dic);
+
                     } elseAction:^(NSDictionary *dic) {
                 
                     } failure:^(NSError *error) {
@@ -473,6 +484,7 @@
     } failure:^(NSError *error) {
         
     }];
+    
     return nil;
 }
 #pragma mark 查询订单是否失效
@@ -481,38 +493,64 @@
 //    [self showPayAlertWithPrice:@"0.01" and:_checkOrderId];
 
     NSString *getUrl = BaseURL@"getStatus/appoint";
-    NSDictionary *parametersDic = @{@"id":_checkOrderId};
+    NSDictionary *parameterDic;
+    if (_checkOrderId) {
+        parameterDic = @{@"id":_checkOrderId};
+
+    }
 //    NSLog(@"%@%@",getUrl,parametersDic);
-    [MBProgressHUD showAnimateHUDAddedTo:Window text:@"正在下单"];
-    [self getRequestURL:getUrl parameters:parametersDic success:^(NSDictionary *dic) {
-        NSLog(@"订单有效：%@",dic);
-//        YuYueOrderViewController *vc = [[YuYueOrderViewController alloc] init];
-//        vc.orderID = orderID;
-//        [self.navigationController pushViewController:vc animated:YES];
-        NSDictionary *dataDic = dic[@"data"];
-        if(![dataDic isEqual:[NSNull null]])
-        {
+    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"%@",operation);
+        NSDictionary *dic = responseObject;
+        //        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+
+            NSLog(@"订单有效：%@",dic);
+            //        YuYueOrderViewController *vc = [[YuYueOrderViewController alloc] init];
+            //        vc.orderID = orderID;
+            //        [self.navigationController pushViewController:vc animated:YES];
+            NSDictionary *dataDic = dic[@"data"];
+            if(![dataDic isEqual:[NSNull null]])
+            {
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
+                [MBProgressHUD showSuccess:@"下单成功" toView:Window];
+                
+                [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
+            }else
+            {
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
+                [MBProgressHUD showSuccess:@"服务器订单数据为空" toView:Window];
+                
+            }
             
-            [MBProgressHUD showSuccess:@"下单成功" toView:Window];
-
-            [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
-        }else
+        }
+        else
         {
-            [MBProgressHUD showSuccess:@"服务器订单数据为空" toView:Window];
+            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+            NSLog(@"订单无效：%@",dic);
+            if (checkNum < 3) {
+                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
+                
+            }else if (checkNum == 3)
+            {
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                [MBProgressHUD showError:dic[@"msg"] toView:Window];
 
+            }
         }
-    } elseAction:^(NSDictionary *dic) {
-        NSLog(@"订单无效：%@",dic);
-        if (checkNum < 5) {
-            [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
-            [MBProgressHUD showHUDAddedTo:Window animated:YES];
-
-        }
-        [MBProgressHUD showError:dic[@"msg"] toView:Window];
-
-    } failure:^(NSError *error) {
         
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        //        NSLog(@"%@",operation);
+        
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD showError:@"网络加载出错" toView:Window];
     }];
+
 }
 /**
  *  功能型警告视图(临时版)
@@ -733,7 +771,7 @@
 -(void)left
 {
     [super left];
-    checkNum = 5;
+    checkNum = 3;
     if (_checkOrderId) {
         [self cancelHandler];
     }

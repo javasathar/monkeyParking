@@ -13,4 +13,8 @@
 @property (nonatomic ,strong)Park *park;
 @property (nonatomic ,strong)NSString *parkArea;
 @property (nonatomic ,strong)NSNumber *opration;
+
+//车位数据
+@property (nonatomic ,strong)NSArray *spaceArr;
+@property (nonatomic ,strong)NSString *parkNo;//默认选中的车位
 @end

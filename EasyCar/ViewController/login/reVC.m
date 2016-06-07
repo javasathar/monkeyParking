@@ -69,7 +69,7 @@
     self.codeTF.keyboardType = UIKeyboardTypePhonePad;
     self.codeTF.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.passwordTF.secureTextEntry = YES;
-    
+    self.recommend.keyboardType = UIKeyboardTypeNumberPad;
     
     [self Gbtn:nil];
     // Do any additional setup after loading the view from its nib.
@@ -189,7 +189,11 @@
         [MBProgressHUD showError:@"您需要同意用户协议!" toView:Window];
         return;
     }
-    
+    if(!(_recommend.text.length == 6 || _recommend.text.length == 0))
+    {
+        [MBProgressHUD showError:@"推广码错误!" toView:Window];
+        return;
+    }
     [MBProgressHUD showHUDAddedTo:Window animated:YES];// 动画开始
     password = _passwordTF.text;
     
@@ -249,7 +253,10 @@
     NSString * url = BaseURL@"regist";
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"phone"] = _phoneTF.text;
-    dic[@"password"] = _passwordTF.text;;
+    dic[@"password"] = _passwordTF.text;
+    if (_recommend.text) {
+        dic[@"promoCode"] = _recommend.text;
+    }
     
     __weak __typeof(self)weakSelf = self;
     
@@ -318,6 +325,9 @@
         
         [self.view endEditing:YES];
         [self reBtn:nil];
+    }
+    if ([textField isEqual:_recommend]) {
+        [_recommend becomeFirstResponder];
     }
     return YES;
 }

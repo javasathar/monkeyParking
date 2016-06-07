@@ -201,6 +201,8 @@
 }
 -(BOOL)isMonkeyWIFI
 {
+    return NO;
+
     NSDictionary* _wifiInfo = (NSDictionary *)[self fetchSSIDInfo];
     if([_wifiInfo[@"SSID"] length] > 10)
     {

@@ -3,7 +3,7 @@
 //  EasyCar
 //
 //  Created by 易停科技－18 on 16/2/24.
-//  Copyright © 2016年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//  Copyright © 2016年 深圳市易停车库科技有限公司. All rights reserved.
 //
 
 #import "PickUpViewController.h"

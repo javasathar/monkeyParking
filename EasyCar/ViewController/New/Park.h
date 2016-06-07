@@ -33,4 +33,6 @@
 //2016猴赛雷
 @property (nonatomic ,assign)BOOL big;
 @property (nonatomic ,assign)BOOL pass;
+
+-(id)initWithDic:(NSDictionary *)dic;
 @end

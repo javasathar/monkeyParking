@@ -9,8 +9,12 @@
 #import "ParkingSpaceAreaViewController.h"
 #import "SpaceNumViewController.h"
 #import "MySpaceOrderViewController.h"
+#import "ParkingSpaceModel.h"
 @interface ParkingSpaceAreaViewController ()
-
+@property (nonatomic ,strong)NSMutableArray *dataArr;
+@property (nonatomic ,strong)NSMutableArray *spaceArr;
+@property (nonatomic ,strong)NSMutableArray *btnArr;
+@property (weak, nonatomic) IBOutlet UILabel *parkNameLB;
 @end
 
 @implementation ParkingSpaceAreaViewController
@@ -18,31 +22,102 @@
     UIView *parkView;
     NSDictionary *_mapDic;
 }
+-(NSMutableArray *)btnArr
+{
+    if (!_btnArr) {
+        _btnArr = [NSMutableArray new];
+    }
+    return _btnArr;
+}
+-(NSMutableArray *)dataArr
+{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+-(NSMutableArray *)spaceArr
+{
+    if (!_spaceArr) {
+        _spaceArr = [NSMutableArray new];
+    }
+    return _spaceArr;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    [self.nav setTitle:@"选择车库" leftText:nil rightTitle:nil showBackImg:YES];
+    [self.nav setTitle:@"请选择车库" leftText:nil rightTitle:nil showBackImg:YES];
     
     FileData *filedata = [[FileData alloc] init];
-    if (_operateState) {
-        _park = [Park new];
-        _park.parkName = @"广州市钟村医院停车场";
-        _park.ID = @"8aafdae854a3048a0154a39042d10004";
-    }
+    //    if (_operateState) {
+    //        _park = [Park new];
+    //        _park.parkName = @"";
+    //        _park.ID = @"8aafdae854a3048a0154a39042d10004";
+    ////        _park.ID = @"00000000000000000000";
+    //
+    //    }
     NSDictionary *mapDic = [filedata checkupMapForMapName:_park.parkName];
     
     _mapDic = mapDic;
-//        NSLog(@"%@:%@",_park.parkName,mapDic);
+    //        NSLog(@"%@:%@",_park.parkName,mapDic);
     if ([filedata checkupFile:mapDic[@"imageName"]]) {
         [self showParkingMap:mapDic];
     }else
     {
         [self showParkingPlc];
     }
+    if(_operateState)
+    {
+        [self checkParkingSpaceList];
+
+    }
+}
+#pragma mark 查询车库车位数据
+-(void)checkParkingSpaceList
+{
+    NSString *getUrl = BaseURL@"parkSpaceList";
+    NSDictionary *parameterDic = @{
+                                   @"parkId":_park.ID
+                                   };
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"%@",operation);
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        NSDictionary *dic = responseObject;
+//        NSLog(@"getDic:%@",dic);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            if ([[dic[@"data"] class] isSubclassOfClass:[NSMutableArray class]]) {
+                NSArray *arr = dic[@"data"];
+                for (NSDictionary *dict in arr) {
+                    ParkingSpaceModel *model = [[ParkingSpaceModel alloc] initWithDictionary:dict];
+//                    NSLog(@"test%@",model.parkId);
+                    [self.dataArr addObject:model];
+                }
+                if(_parkingNote)
+                {
+                    [self pickUp];
+
+                }
+            }
+        }
+        else
+        {
+            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+            [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        //        NSLog(@"%@",operation);
+        
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD showError:@"网络加载出错" toView:Window];
+    }];
+    
 }
 #pragma mark 展示缓存地图
 -(void)showParkingMap:(NSDictionary *)dic
 {
+    self.parkNameLB.text = _park.parkName;
     NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *imagePath = [path stringByAppendingPathComponent:dic[@"imageName"]];
     NSDictionary *uiContent = dic[@"UIcontent"];
@@ -66,6 +141,7 @@
         [btn setFrame:CGRectMake([btnArr[0] floatValue] * parkView.width, [btnArr[1] floatValue] * parkView.height, [btnArr[2] floatValue] * parkView.width, [btnArr[3] floatValue] * parkView.height)];
         
         [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self.btnArr addObject:btn];
         [parkView addSubview:btn];
     }
 }
@@ -84,6 +160,8 @@
             [btn setFrame:CGRectMake(plcWidth * (i * 2 + 1), Width / 3 + plcWidth * ( j * 2.5 + 1), plcWidth, plcWidth)];
             
             [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
+            [self.btnArr addObject:btn];
+
             [self.view addSubview:btn];
         }
     }
@@ -91,11 +169,7 @@
 #pragma mark 点击车库
 -(void)btnClick:(UIButton *)sender
 {
-    
-    
-    
-    
-    
+
     if (_operateState) {
         SpaceNumViewController *vc = [[SpaceNumViewController alloc] init];
         if (_mapDic) {
@@ -104,9 +178,23 @@
         vc.park = _park;
         vc.parkArea = sender.titleLabel.text;
         vc.opration = _opration;
+        for (ParkingSpaceModel *model in self.dataArr) {
+            if ([vc.parkArea isEqualToString:[model.parkArea substringWithRange:NSMakeRange(0, 1)]]) {
+                [self.spaceArr addObject:model];
+            }
+        }
+        if (self.spaceArr.count > 0) {
+            vc.spaceArr = self.spaceArr;
+
+        }
+        if(_parkingNote)
+        {
+            vc.parkNo = _parkingNote[@"parkNo"];
+        }
         [self.navigationController pushViewController:vc animated:YES];
     }else
     {
+        //下整租订单
         MySpaceOrderViewController *vc = [[MySpaceOrderViewController alloc] init];
         vc.park = _park;
         vc.parkArea = sender.titleLabel.text;
@@ -127,5 +215,15 @@
  // Pass the selected object to the new view controller.
  }
  */
+#pragma mark 跳转至取车
+-(void)pickUp
+{
+    NSString *parkArea = _parkingNote[@"parkArea"];
+    for (UIButton *btn in self.btnArr) {
+        if ([btn.titleLabel.text isEqualToString:[parkArea substringToIndex:1] ]) {
+                [self btnClick:btn];
+        }
+    }
 
+}
 @end

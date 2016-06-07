@@ -220,7 +220,7 @@ typedef NS_ENUM (NSUInteger, OrderListType)
                                  };
     CoverView *cover = (CoverView *)[tableView viewWithTag:100];
     [self getRequestURL:url parameters:parameters success:^(NSDictionary *dic) {
-        
+//        NSLog(@"订单信息：%@",dic);
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         [cover removeFromSuperview];
         [tableView.mj_header endRefreshing];

@@ -12,4 +12,5 @@
 @property (nonatomic ,strong)Park *park;
 @property (nonatomic)NSInteger operateState;
 @property (nonatomic ,strong)NSNumber *opration;
+@property (nonatomic ,strong)NSDictionary *parkingNote;//停车记录
 @end

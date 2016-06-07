@@ -3,7 +3,7 @@
 //  EasyCar
 //
 //  Created by zhangke on 15/5/17.
-//  Copyright (c) 2015年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//  Copyright (c) 2015年 深圳市易停车库科技有限公司. All rights reserved.
 //
 
 #import "WashCarViewController.h"

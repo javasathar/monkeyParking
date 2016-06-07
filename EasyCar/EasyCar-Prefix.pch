@@ -107,8 +107,8 @@
 
 // 网站
 //#define SysURL @"http://119.29.9.61:8080/ytcSystem/"
-//#define SysURL @"http://120.76.24.156:8080/ytcSystem/"
-#define SysURL @"http://120.27.135.8:8080/ytcSystem/"
+#define SysURL @"http://120.76.24.156:8080/ytcSystem/"
+//#define SysURL @"http://120.27.135.8:8080/ytcSystem/"
 #define BaseURL SysURL@"rest/api/member/"
 #define PayURL SysURL@"rest/payment/pay/"
 
@@ -149,6 +149,7 @@
     [Unit changeImage:[UIImage imageNamed:@"progress_8"] toScale:Scale1],\
     ]
 //2016
+#define k_allDistance 50
 #define wifiName @"MonkeyParking"
 #import "Database.h"
 #import "FileData.h"

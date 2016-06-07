@@ -10,6 +10,9 @@
 #import "UserManager.h"
 #import "MY_nav.h"
 #import "CoverView.h"
+#import "Park.h"
+#import <CoreLocation/CoreLocation.h>
+
 @class Order;
 
 
@@ -72,5 +75,19 @@
 
 //2016
 -(void)clickMonkey;
+#pragma mark 保存停车记录
+-(void)safeParkingNote:(Park *)park andParkArea:(NSString *)parkArea andParkNo:(NSString *)parkNo andControlType:(NSInteger)type andOrderId:(NSString *)orderId;
+#pragma mark 查询操作结果
+-(void)checkControlResult:(NSString *)orderId;
 
+
+#pragma mark 百度坐标转高德坐标
+- (CLLocationCoordinate2D)GCJ02FromBD09:(CLLocationCoordinate2D)coor;
+
+
+#pragma mark 高德坐标转百度坐标
+- (CLLocationCoordinate2D)BD09FromGCJ02:(CLLocationCoordinate2D)coor;
+
+#pragma mark 地球转火星
+- (CLLocation *)transformToMars:(CLLocation *)location;
 @end

@@ -23,4 +23,5 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *Gbtn;
 
+@property (weak, nonatomic) IBOutlet UITextField *recommend;
 @end

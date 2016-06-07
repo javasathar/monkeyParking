@@ -2,8 +2,8 @@
 //  YuEZhuanChu.m
 //  EasyCar
 //
-//  Created by 橙晓侯 on 16/1/14.
-//  Copyright © 2016年 深圳腾华兄弟互联技术有限公司. All rights reserved.
+//  Created by 易停科技 on 16/1/14.
+//  Copyright © 2016年 深圳市易停车库科技有限公司. All rights reserved.
 //
 
 #import "YuEZhuanChu.h"
