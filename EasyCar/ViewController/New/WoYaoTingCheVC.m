@@ -184,7 +184,7 @@
     [[AFHTTPRequestOperationManager manager] GET:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
         NSDictionary *dic = responseObject;
-//        NSLog(@"dic:%@",dic);
+        NSLog(@"dic:%@\n%@",dic,operation);
         if ([dic[@"status"] isEqual:@(200)]) {
             
             [MBProgressHUD hideAllHUDsForView:Window animated:YES];

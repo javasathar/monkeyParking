@@ -443,14 +443,14 @@
         NSLog(@"%@",operation);
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         NSDictionary *dic = responseObject;
-//        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
+        //        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
         if ([dic[@"status"] isEqual:@(200)]) {
             
             success(dic);
         }
         else
         {
-//            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
             [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
             elseAction(dic);
         }
@@ -459,7 +459,7 @@
         //        NSLog(@"%@",operation);
         
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
-        NSLog(@"报错：%@", [error localizedDescription]);
+        NSLog(@"报错：%@\n%@", [error localizedDescription],operation);
         [MBProgressHUD showError:@"网络加载出错" toView:Window];
         failure(error);
     }];
@@ -469,7 +469,7 @@
 {
     [MBProgressHUD showHUDAddedTo:Window animated:YES]; // 动画开始
     AFHTTPRequestOperationManager *mangager = [AFHTTPRequestOperationManager manager];
-//    mangager.responseSerializer = [AFJSONResponseSerializer serializer];
+    //    mangager.responseSerializer = [AFJSONResponseSerializer serializer];
     [mangager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         //        NSLog(@"%@",operation);
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
@@ -482,15 +482,16 @@
         }
         else
         {
+            NSLog(@"%@",operation);
             [MBProgressHUD showError:dic[@"msg"] toView:Window];
             elseAction(dic);
         }
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        //        NSLog(@"%@",operation);
+        NSLog(@"%@",operation);
         
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
-        NSLog(@"报错：%@", [error localizedDescription]);
+        NSLog(@"报错：%@\n%@", [error localizedDescription],operation);
         [MBProgressHUD showError:@"网络加载出错" toView:Window];
         failure(error);
     }];
@@ -560,10 +561,10 @@
         [self gotoBalancePay:blockOrder];
     }]];
     
-    [alertCtl addAction:[UIAlertAction actionWithTitle:@"优惠劵支付" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        [self gotoPreferential:blockOrder];
-    }]];
+//    [alertCtl addAction:[UIAlertAction actionWithTitle:@"优惠劵支付" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        
+//        [self gotoPreferential:blockOrder];
+//    }]];
     
     [self presentViewController:alertCtl animated:YES completion:nil];
     
@@ -581,33 +582,33 @@
 -(void)gotoPreferential:(Order *)order
 {
     
-        // 没有传入nil订单号则在此生成  作废
-        //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
-        // 调用支付宝
-        NSLog(@"%@",order.productDescription);
-        NSLog(@"%@注册了支付通知\n将使用订单号：%@", self, order.orderNum);
+    // 没有传入nil订单号则在此生成  作废
+    //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
+    // 调用支付宝
+    NSLog(@"%@",order.productDescription);
+    NSLog(@"%@注册了支付通知\n将使用订单号：%@", self, order.orderNum);
+    
+    NSString *postURL = PayURL@"coupon";
+    NSDictionary *parameterDic = @{@"orderId":order.orderID,
+                                   @"orderType":order.payType,
+                                   @"couponId":@"",
+                                   };
+    [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息：%@",dic);
+        if (![dic[@"data"] isEqual:[NSNull null]]) {
+            NSLog(@"%@",dic[@"data"]);
+            //                [self alipayWithServerStr:dic[@"data"]];
+        }
         
-        NSString *postURL = PayURL@"coupon";
-        NSDictionary *parameterDic = @{@"orderId":order.orderID,
-                                       @"orderType":order.payType,
-                                       @"couponId":@"",
-                                       };
-        [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息：%@",dic);
-            if (![dic[@"data"] isEqual:[NSNull null]]) {
-                NSLog(@"%@",dic[@"data"]);
-                //                [self alipayWithServerStr:dic[@"data"]];
-            }
-            
-            
-        } elseAction:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息请求异常：%@",dic);
-            
-        } failure:^(NSError *error) {
-            
-        }];
+        
+    } elseAction:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息请求异常：%@",dic);
+        
+    } failure:^(NSError *error) {
+        
+    }];
     
 }
 
@@ -617,40 +618,47 @@
     // 先注册通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(payResultHandle:) name:PayResult object:nil];
     
-        // 没有传入nil订单号则在此生成  作废
-        //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
-        // 调用支付宝
-        NSLog(@"%@",order.productDescription);
-        NSLog(@"%@注册了支付通知\n", self);
+    // 没有传入nil订单号则在此生成  作废
+    //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
+    // 调用支付宝
+    NSLog(@"%@",order.productDescription);
+    NSLog(@"%@注册了支付通知\n", self);
+    
+    NSString *postURL = PayURL@"alipay";
+//    NSDictionary *parameterDic = @{@"orderId":order.orderID,
+//                                   @"orderType":order.payType
+//                                   };
+    NSMutableDictionary *parameterDic = [NSMutableDictionary new];
+    [parameterDic setObject:order.payType forKey:@"orderType"];
+    if (order.orderID) {
+        [parameterDic setObject:order.orderID forKey:@"orderId"];
+
+    }
+    NSLog(@"parameteDic:%@",parameterDic);
+    [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
         
-        NSString *postURL = PayURL@"alipay";
-        NSDictionary *parameterDic = @{@"orderId":order.orderID,
-                                       @"orderType":order.payType
-                                       };
-        [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
-            
-            NSLog(@"msg:%@  支付订单信息：%@",dic[@"msg"],dic[@"data"]);
-            if (![dic[@"data"] isEqual:[NSNull null]]) {
-//                NSLog(@"data:%@",dict2[@"body"]);
-//                [self alipayWithServerDic:dict2];
-                NSString *dicStr = dic[@"data"];
-//                dicStr = [dicStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                NSError *err;
-                NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[dicStr dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&err];
-                if (!err) {
-                    [self alipayWithServerDic:dict];
-                }
+        NSLog(@"msg:%@  支付订单信息：%@",dic[@"msg"],dic[@"data"]);
+        if (![dic[@"data"] isEqual:[NSNull null]]) {
+            //                NSLog(@"data:%@",dict2[@"body"]);
+            //                [self alipayWithServerDic:dict2];
+            NSString *dicStr = dic[@"data"];
+            //                dicStr = [dicStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            NSError *err;
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[dicStr dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&err];
+            if (!err) {
+                [self alipayWithServerDic:dict];
             }
-            
-            
-        } elseAction:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息请求异常：%@",dic);
-            
-        } failure:^(NSError *error) {
-            
-        }];
+        }
         
+        
+    } elseAction:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息请求异常：%@",dic);
+        
+    } failure:^(NSError *error) {
+        
+    }];
+    
     
     
     return order.orderNum;
@@ -668,68 +676,74 @@
 {
     // 先注册通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(payResultHandle:) name:PayResult object:nil];
-
-        // 没有传入nil订单号则在此生成 作废
-        //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
-        NSLog(@"%@注册了支付通知", self);
+    
+    // 没有传入nil订单号则在此生成 作废
+    //        order.orderNum = [AlipayToolKit genTradeNoWithTime];
+    NSLog(@"%@注册了支付通知", self);
+    
+    NSString *postURL = PayURL@"weixin";
+    NSMutableDictionary *parameterDic = [NSMutableDictionary new];
+    [parameterDic setObject:order.payType forKey:@"orderType"];
+//    [parameterDic setValue:order.payType forKey:@"orderType"];
+    if (order.orderID) {
+        [parameterDic setObject:order.orderID forKey:@"orderId"];
         
-        NSString *postURL = PayURL@"weixin";
-        NSDictionary *parameterDic = @{@"orderId":order.orderID,
-                                       @"orderType":order.payType
-                                       };
-        [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
-            
-
-            NSLog(@"msg:%@  支付订单信息：%@",dic[@"msg"],dic[@"data"]);
-            if (![dic[@"data"] isEqual:[NSNull null]]) {
-                NSString *dicStr = dic[@"data"];
-                NSLog(@"dicStr:%@",dicStr);
-                //                dicStr = [dicStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[dicStr dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
-                [self WXPayWithServerDic:dict];
-            }
-            
-            
-        } elseAction:^(NSDictionary *dic) {
-            NSLog(@"%@",dic[@"msg"]);
-            NSLog(@"支付订单信息请求异常：%@",dic);
-            
-        } failure:^(NSError *error) {
-            
-        }];
+    }
+    
+    
+    [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
         
-//        // 以下是发起支付，但是新增加了提示语
-//        if ([UserDefaultsFiles shouldShowWXPayNotice]) {
-//            // 如果要提示
-//            UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"iOS9用户微信支付须知" message:@"在使用微信付款后请直接点击右上角绿色的“返回停车大圣”以确保完成订单支付，切勿点击左上角系统提供的返回功能或者其他无关操作" preferredStyle:UIAlertControllerStyleAlert];
-//            
-//            
-//            
-//            [ac addAction:[UIAlertAction actionWithTitle:@"不再提示" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-//                
-//                [UserDefaultsFiles doNotShowWXPayNoticeAgain];
-//                [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
-//            }]];
-//            
-//            [ac addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//                
-//                [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
-//            }]];
-//            
-//            [self presentViewController:ac animated:YES completion:nil];
-//        }
-//        else
-//        {
-//            // 如果无需提示，直接进支付
-//            [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
-//        }
- 
+        
+        NSLog(@"msg:%@  支付订单信息：%@",dic[@"msg"],dic[@"data"]);
+        if (![dic[@"data"] isEqual:[NSNull null]]) {
+            NSString *dicStr = dic[@"data"];
+            NSLog(@"dicStr:%@",dicStr);
+            //                dicStr = [dicStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[dicStr dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+            [self WXPayWithServerDic:dict];
+        }
+        
+        
+    } elseAction:^(NSDictionary *dic) {
+        NSLog(@"%@",dic[@"msg"]);
+        NSLog(@"支付订单信息请求异常：%@",dic);
+        
+    } failure:^(NSError *error) {
+        
+    }];
+    
+    //        // 以下是发起支付，但是新增加了提示语
+    //        if ([UserDefaultsFiles shouldShowWXPayNotice]) {
+    //            // 如果要提示
+    //            UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"iOS9用户微信支付须知" message:@"在使用微信付款后请直接点击右上角绿色的“返回停车大圣”以确保完成订单支付，切勿点击左上角系统提供的返回功能或者其他无关操作" preferredStyle:UIAlertControllerStyleAlert];
+    //
+    //
+    //
+    //            [ac addAction:[UIAlertAction actionWithTitle:@"不再提示" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    //
+    //                [UserDefaultsFiles doNotShowWXPayNoticeAgain];
+    //                [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
+    //            }]];
+    //
+    //            [ac addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    //
+    //                [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
+    //            }]];
+    //
+    //            [self presentViewController:ac animated:YES completion:nil];
+    //        }
+    //        else
+    //        {
+    //            // 如果无需提示，直接进支付
+    //            [GBWXPayManager wxpayWithOrderID:order.orderNum orderTitle:order.productName amount:order.amount];
+    //        }
+    
     return order.orderNum;
 }
 -(void)WXPayWithServerDic:(NSDictionary *)dic
 {
     [[[GBWXPayManager alloc] init]wxpayWithOrderID:nil orderTitle:nil amount:nil partnerID:dic[@"partnerid"] prepayID:dic[@"prepayid"] package:dic[@"package"] nonceStr:dic[@"noncestr"] timeStamp:dic[@"timestamp"] signKey:dic[@"signKey"]];
-
+    
 }
 
 #pragma mark 支付结果处理（子类重写前需调用一遍父类方法）
@@ -777,7 +791,7 @@
                               @"ID":park.ID,
                               @"address":park.address,
                               @"comParkImg":park.comParkImg,
-};
+                              };
     NSDictionary *parkingNote = @{@"park":parkDic,
                                   @"parkArea":parkArea,
                                   @"parkNo":parkNo,

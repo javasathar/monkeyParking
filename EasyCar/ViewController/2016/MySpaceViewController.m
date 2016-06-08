@@ -201,11 +201,14 @@
 }
 #pragma mark 转租
 - (IBAction)rentTran:(id)sender {
+    
     if (!historyBtn) {
         return;
     }
     NSString *getUrl = BaseURL@"rentTran";
     MySpaceModel *model = self.dataArr[historyBtn.tag - 10000];
+//    NSLog(@"%@",[Unit stringFromTimeInterval:1467648000 formatterOrNil:@"yyyyMMdd"]);
+//    return;
     if ([model.result isEqual:@4]) {
         [MBProgressHUD showResult:YES text:@"已转租" delay:1.0f];
 
@@ -213,7 +216,8 @@
     NSDictionary *parameterDic = @{
                                    @"id":model.parkspaceId,
                                    @"startDay":[Unit getTimeWithFormat:@"yyyyMMdd"],
-                                   @"endDay":@"20160610"
+                                   @"endDay":[Unit stringFromTimeInterval:[model.endTime.length >=10 ?[model.endTime substringToIndex:10]:model.endTime doubleValue] formatterOrNil:@"yyyyMMdd"]
+//                                   @"endDay":[Unit stringFromTimeInterval:[model.endTime doubleValue] formatterOrNil:@"yyyyMMdd"]
                                    };
 //    NSLog(@"parameterDic:%@",parameterDic);
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {

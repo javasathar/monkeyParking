@@ -82,9 +82,7 @@
 
 #pragma mark 点击充值
 - (IBAction)onChongZhi:(id)sender {
-    [MBProgressHUD showMessag:@"暂未开放" toView:Window];
-    return;
-#warning 暂未开放
+
     if (!_sMoneyBtn) {
         
         [MBProgressHUD showError:@"请选择充值金额" toView:Window];
@@ -95,23 +93,44 @@
         [MBProgressHUD showError:@"请选择支付方式" toView:Window];
         return;
     }
+    NSString *getUrl = BaseURL@"recharge";
+    NSDictionary *parameterDic = @{
+                                    @"memberid":self.user.userID,
+                                    @"money":_sMoneyBtn.titleLabel.text
+                                   };
+    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+//        NSLog(@"充值：%@",dic);
+        if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+            if (dic[@"data"][@"orderid"]) {
+                [self gotoPay:dic[@"data"][@"orderid"]];
+            }
+        }
+    } elseAction:^(NSDictionary *dic) {
+        
+    } failure:^(NSError *error) {
+        
+    }];
     
+}
+#pragma mark 准备支付
+-(void)gotoPay:(NSString *)payOrderId
+{
     Order *order = [Order new];
     order.productName = @"充值";
     order.productDescription = [NSString stringWithFormat:@"余额充值%@元",_sMoneyBtn.titleLabel.text];
-    #warning 注意啦：测试价格0.01
-    order.amount = @"0.01";
-//    order.amount = _sMoneyBtn.titleLabel.text;
-
-
+#warning 注意啦：测试价格0.01
+//    order.amount = @"0.01";
+    order.amount = _sMoneyBtn.titleLabel.text;
+    order.payType = @3;//充值
+    order.orderID = payOrderId;
+    
     if ([_sPayTypeBtn isEqual:_aliBtn]) {
-        _orderId = [self gotoAliPay:order orderID:nil];
+        _orderId = [self gotoAliPay:order];
     }
     if ([_sPayTypeBtn isEqual:_wxBtn]) {
-        _orderId = [self gotoWXPay:order orderID:nil];
+        _orderId = [self gotoWXPay:order];
     }
 }
-
 - (void)requestAfterPaySuccess
 {
     NSDictionary *parameters = @{

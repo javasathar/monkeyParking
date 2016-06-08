@@ -67,8 +67,17 @@
     
     [self requestCarList];
     
+    [self viewInitial];
 }
-
+#pragma mark 视图初始化
+-(void)viewInitial
+{
+    UILabel *messageLB = [[UILabel alloc] initWithFrame:CGRectMake(Width * 0.5 - 100, Heigth -50, 200, 50)];
+    messageLB.textAlignment = NSTextAlignmentCenter;
+    messageLB.text = @"长按车辆删除";
+    messageLB.textColor = [UIColor orangeColor];
+    [self.view addSubview:messageLB];
+}
 #pragma mark - <UITableViewDataSource>
 
 #pragma mark 段数

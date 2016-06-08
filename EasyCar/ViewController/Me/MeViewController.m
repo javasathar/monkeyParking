@@ -427,7 +427,7 @@
     [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
         NSDictionary *dic = responseObject;
-        NSLog(@"msg : %@", dic[@"msg"]);
+        NSLog(@"operation: %@ \n data:%@ \n msg : %@", operation,dic,dic[@"msg"]);
         
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         

@@ -45,6 +45,7 @@
     CLLocation *nowLocation;//位置
     Park *nestestPark; //最近的停车场
     NSInteger locationNum;//只需定位一次
+    NSMutableArray *turnsImages;//轮播图
 }
 @property (nonatomic ,strong)FileData *fileData;
 @end
@@ -64,11 +65,11 @@
     
     // 定制导航栏
     [self.nav setTitle:@"停车大圣" leftText:nil rightTitle:nil showBackImg:NO];
-    //    UIImage *rightImg = [UIImage imageNamed:@"iconfont-xiaoxi"];
-    //    NSData *imageData = UIImagePNGRepresentation(rightImg);
-    //    rightImg = [[UIImage imageWithData:imageData scale:1.1] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];// 右边的图片稍微变小一点
-    //    [self.nav.rightImageBtn setImage:rightImg forState:UIControlStateNormal];
-    //    self.nav.rightImageBtn.tintColor = [UIColor whiteColor];
+        UIImage *rightImg = [UIImage imageNamed:@"iconfont-xiaoxi"];
+        NSData *imageData = UIImagePNGRepresentation(rightImg);
+        rightImg = [[UIImage imageWithData:imageData scale:1.1] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];// 右边的图片稍微变小一点
+        [self.nav.rightImageBtn setImage:rightImg forState:UIControlStateNormal];
+        self.nav.rightImageBtn.tintColor = [UIColor whiteColor];
     
     UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [leftBtn setImage:[UIImage imageNamed:@"Shape-8"] forState:UIControlStateNormal];
@@ -80,6 +81,7 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     
+//    [self requestReturnsImagesFromNet];
     [self codeLayout];
     
     
@@ -94,22 +96,22 @@
 
 
 #pragma mark 进入消息界面
-//- (void)right
-//{
-//
-//
-//    if (self.user.isLogin)
-//    {
-//        MessageVC *vc = [Unit EPStoryboard:@"MessageVC"];
-//        [self.navigationController pushViewController:vc animated:YES];
-//    }
-//    else
-//    {
-//        [self showFunctionAlertWithTitle:@"温馨提示" message:@"您尚未登录" functionName:@"点击登录" Handler:^{
-//            [self loginBeforePushVC:NSStringFromClass([MessageVC class])];
-//        }];
-//    }
-//}
+- (void)right
+{
+
+
+    if (self.user.isLogin)
+    {
+        MessageVC *vc = [Unit EPStoryboard:@"MessageVC"];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    else
+    {
+        [self showFunctionAlertWithTitle:@"温馨提示" message:@"您尚未登录" functionName:@"点击登录" Handler:^{
+            [self loginBeforePushVC:NSStringFromClass([MessageVC class])];
+        }];
+    }
+}
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -323,30 +325,37 @@
     NSDictionary *parameterDic = @{
                                    @"memberId":self.user.userID
                                    };
-    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-        NSLog(@"检查是否有预约:%@",dic);
-        if (![dic[@"data"] isEqual:[NSNull null]])  {
-            NSArray *dataArr = dic[@"data"];
-            if (dataArr.count > 0) {
-                ParkingYuYueViewController *vc = [[ParkingYuYueViewController alloc] init];
-                AppointOrderModel *model = [[AppointOrderModel alloc] initWithDic:dataArr[0]];
-                vc.appointModel = model;
-                [self.navigationController pushViewController:vc animated:YES];
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSLog(@"%@",operation);
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+        NSDictionary *dic = responseObject;
+        //        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
+        if ([dic[@"status"] isEqual:@(200)]) {
+            NSLog(@"检查是否有预约:%@",dic);
+            if (![dic[@"data"] isEqual:[NSNull null]])  {
+                NSArray *dataArr = dic[@"data"];
+                if (dataArr.count > 0) {
+                    ParkingYuYueViewController *vc = [[ParkingYuYueViewController alloc] init];
+                    AppointOrderModel *model = [[AppointOrderModel alloc] initWithDic:dataArr[0]];
+                    vc.appointModel = model;
+                    [self.navigationController pushViewController:vc animated:YES];
+                }
             }
         }
-    } elseAction:^(NSDictionary *dic) {
-        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
-        
-        //        ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
-        //        vc.operateState = 1;
-        //        vc.opration = opration;
-        //        [self.navigationController pushViewController:vc animated:YES];
-        //
-        locationNum = 0;
-        [self checkNestestParking];
-        
-    } failure:^(NSError *error) {
-        
+        else
+        {
+            //        ParkingSpaceAreaViewController *vc = [[ParkingSpaceAreaViewController alloc] init];
+            //        vc.operateState = 1;
+            //        vc.opration = opration;
+            //        [self.navigationController pushViewController:vc animated:YES];
+            //
+            locationNum = 0;
+            [self checkNestestParking];
+            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+//            [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
+        }
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        NSLog(@"error:%@\n%@",error.localizedDescription,operation);
     }];
     return nil;
 }
@@ -404,7 +413,7 @@
                 [self.navigationController pushViewController:vc animated:YES];
             }else
             {
-                [MBProgressHUD showResult:NO text:@"没有停车记录" delay:1.0f];
+                [MBProgressHUD showResult:NO text:@"还没停过车哦" delay:1.0f];
                 
             }
         }
@@ -490,7 +499,8 @@
                 }
             }
             if (!nestestPark) {
-                [MBProgressHUD showMessag:@"200m内没有立体车库" toView:Window];
+//                [MBProgressHUD showMessag:@"没有预约记录，附近没有立体车库" toView:Window];
+                [MBProgressHUD showResult:NO text:@"附近没有立体车库" delay:2.0f];
             }
         }else
         {
@@ -569,7 +579,40 @@
             break;
     }
 }
+#pragma mark 从服务器获取轮播图图片
+-(void)requestReturnsImagesFromNet
+{
 
+//    turnsImages = [NSMutableArray arrayWithArray:turnsImages];
+    
+    NSString *getUrl = BaseURL@"slide";
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:nil success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+//        NSLog(@"slideImages:%@",responseObject);
+        NSDictionary *dic = responseObject;
+        if ([dic[@"data"] isKindOfClass:[NSArray class]]) {
+            NSArray *dataArr = dic[@"data"];
+//            [turnsImages removeAllObjects];
+            NSMutableArray *images = [NSMutableArray new];
+            for (NSDictionary *dict in dataArr) {
+                [images addObject:[NSString stringWithFormat:SysURL@"%@",dict[@"slideimg"]]];
+            }
+            [self safeImages:images];
+
+        }
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+    }];
+}
+#pragma mark 刷新并保存图片到本地
+-(void)safeImages:(NSMutableArray *)images
+{
+    [[NSUserDefaults standardUserDefaults] setObject:images forKey:@"turnsImages"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    _cycleScrollView.imageURLStringsGroup = images;
+    
+    [_cycleScrollView setNeedsDisplay];
+}
 #pragma mark 代码布局
 - (void)codeLayout
 {
@@ -587,15 +630,24 @@
     
     
     if (!isIphone4s) {
-        NSArray *images = @[[UIImage imageNamed:@"img15"],
-                            //                        [UIImage imageNamed:@"img13"],
-                            //                        [UIImage imageNamed:@"img14"],
-                            //                        [UIImage imageNamed:@"img11"]
-                            ];
-        
+
+//        if (turnsImages.count == 0) {
+            NSArray *imageArr = @[[UIImage imageNamed:@"img15"],
+            //                        [UIImage imageNamed:@"img13"],
+            //                        [UIImage imageNamed:@"img14"],
+            //                        [UIImage imageNamed:@"img11"]
+                                    ];
+//            [turnsImages addObject:[UIImage imageNamed:@"img15"]];
+//        }
         // 本地加载 --- 创建不带标题的图片轮播器
-        _cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 64, UI_SCREEN_WIDTH, UI_SCREEN_WIDTH/2) imageNamesGroup:images];
-        //    _cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, UI_SCREEN_WIDTH/2) imagesGroup:images];
+//        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"turnsImages"]) {
+//            turnsImages = [[NSUserDefaults standardUserDefaults] objectForKey:@"turnsImages"];
+//            NSLog(@"本地turnsImages:%@",turnsImages);
+//        }
+//        _cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 64, UI_SCREEN_WIDTH, UI_SCREEN_WIDTH/2) imageURLStringsGroup:turnsImages];
+//        _cycleScrollView.placeholderImage = [UIImage imageNamed:@"img15"];
+        _cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 64, UI_SCREEN_WIDTH, UI_SCREEN_WIDTH/2) imageNamesGroup:imageArr];
+//            _cycleScrollView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, UI_SCREEN_WIDTH/2) imagesGroup:images];
         _cycleScrollView.pageControlStyle = SDCycleScrollViewPageContolStyleClassic;
         
         

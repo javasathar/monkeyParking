@@ -90,8 +90,36 @@
     [self getFirstCar];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chooseCarNote:) name:ReturnCarInfo object:nil];
     
+    [self getRentPrice];
     
-    
+}
+#pragma mark 获取车库整租价格，失败则返回
+-(void)getRentPrice
+{
+    NSString *getUrl = BaseURL@"getRentPrice";
+    NSMutableDictionary *parameterDic = [NSMutableDictionary new];
+    if (_park) {
+        [parameterDic setObject:_park.ID forKey:@"parkId"];
+    }else
+    {
+        [MBProgressHUD showError:@"数据出错，请联系管理员" toView:Window];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+//        NSLog(@"rentPrice:%@",dic);
+        if ([dic[@"data"] isKindOfClass:[NSNumber class]]) {
+            _totalPrice.text = [NSString stringWithFormat:@"%@",dic[@"data"]];
+        }else
+        {
+            [MBProgressHUD showError:@"数据出错，请联系管理员" toView:Window];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    } elseAction:^(NSDictionary *dic) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } failure:^(NSError *error) {
+        [self.navigationController popViewControllerAnimated:YES];
+
+    }];
 }
 #pragma mark 选择车辆
 - (IBAction)chosseCarAction:(id)sender {
@@ -191,7 +219,8 @@
                                    @"rentTime":[NSString stringWithFormat:@"%ld",(long)_rusult],
                                    //                                   @"parkNo":_parkNO,
                                    @"parkArea":_parkArea.length > 1 ?_parkArea:[NSString stringWithFormat:@"%@0",_parkArea],
-                                   @"rentMoney":@"0.01",
+//                                   @"rentMoney":@"0.01",
+                                   @"rentMoney":_totalPrice.text
                                    };
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         NSDictionary *dic = (NSDictionary *)responseObject;

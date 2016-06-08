@@ -11,6 +11,7 @@
                 <outlet property="buyBtn" destination="35i-vH-ts8" id="enb-ca-bto"/>
                 <outlet property="chooseCarLabel" destination="rqT-b7-r3p" id="JRK-FE-qdu"/>
                 <outlet property="chooseCouponLB" destination="hLM-0N-IHn" id="eL8-Zu-zfh"/>
+                <outlet property="parkMessage" destination="ASX-Eb-mll" id="gZ7-gd-1dk"/>
                 <outlet property="parkNameLB" destination="Z4J-Jh-8Rz" id="EyD-Pw-3oX"/>
                 <outlet property="priceLB" destination="qC6-3O-3EE" id="Y3R-yg-ciW"/>
                 <outlet property="totalPrice" destination="BVA-wP-fWU" id="0Ym-cf-ION"/>
@@ -232,11 +233,23 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请尽快到停车场停车" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ASX-Eb-mll">
+                    <rect key="frame" x="8" y="325" width="304" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="RdB-wP-21d"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="1" green="0.34754637750781892" blue="0.37838792757922068" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="0.94637419871794881" green="0.94637419871794881" blue="0.94637419871794881" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="AGJ-yA-wvs" secondAttribute="trailing" id="Bdb-bf-4gi"/>
+                <constraint firstItem="ASX-Eb-mll" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="Fng-Lp-euw"/>
+                <constraint firstItem="ASX-Eb-mll" firstAttribute="top" secondItem="QEQ-gM-kkv" secondAttribute="bottom" constant="8" id="Gmp-eH-hdY"/>
                 <constraint firstAttribute="trailing" secondItem="QEQ-gM-kkv" secondAttribute="trailing" id="Q17-ij-kWX"/>
+                <constraint firstAttribute="trailing" secondItem="ASX-Eb-mll" secondAttribute="trailing" constant="8" id="RTx-yO-DTz"/>
                 <constraint firstItem="AGJ-yA-wvs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="SEQ-vH-6sg"/>
                 <constraint firstAttribute="trailing" secondItem="35i-vH-ts8" secondAttribute="trailing" constant="15" id="Vhj-aO-IMC"/>
                 <constraint firstItem="rC1-4b-URX" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="aW3-zn-0VK"/>

@@ -60,7 +60,7 @@
 #import "PushInfo.h"
 #import "UMSocial.h"
 #import "MLTransition.h"
-
+#import <UIImageView+WebCache.h>
 
 #import "AlipayHeader.h"    //gitHub 支付宝
 #import "GBWXPayManager.h"  //gitHub 微信
@@ -107,8 +107,8 @@
 
 // 网站
 //#define SysURL @"http://119.29.9.61:8080/ytcSystem/"
-#define SysURL @"http://120.76.24.156:8080/ytcSystem/"
-//#define SysURL @"http://120.27.135.8:8080/ytcSystem/"
+//#define SysURL @"http://120.76.24.156:8080/ytcSystem/"
+#define SysURL @"http://120.27.135.8:8080/ytcSystem/"
 #define BaseURL SysURL@"rest/api/member/"
 #define PayURL SysURL@"rest/payment/pay/"
 
@@ -150,7 +150,7 @@
     ]
 //2016
 #define k_allDistance 50
-#define wifiName @"MonkeyParking"
+#define wifiName @"MonkeyParking01"
 #import "Database.h"
 #import "FileData.h"
 #define APP_URL @"http://itunes.apple.com/cn/lookup?id=1080875914"

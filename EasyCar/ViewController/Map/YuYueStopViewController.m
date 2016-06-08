@@ -24,6 +24,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *totalPrice;
 @property (weak, nonatomic) IBOutlet UILabel *parkNameLB;
 
+@property (weak, nonatomic) IBOutlet UILabel *parkMessage;
 @end
 
 @implementation YuYueStopViewController
@@ -92,7 +93,10 @@
     
     [self getFirstCar];
 
+    if (_park) {
+        self.parkMessage.text = [NSString stringWithFormat:@"! 支付后请在%.0f分钟内到停车场停车",_park.validDate];
 
+    }
 }
 
 #pragma mark 获取默认车辆
@@ -348,7 +352,8 @@
     order.productName = [NSString stringWithFormat:@"%@预约停车",_car.carPlate];
     order.productDescription = @"预约停车";
 #warning 注意啦：测试价格0.01
-    order.amount = @"0.01";//[NSString stringWithFormat:@"%.1f",_appointPrice];
+//    order.amount = @"0.01";
+    order.amount = [NSString stringWithFormat:@"%.1f",[_priceLB.text floatValue]];
     // 调支付
     order.orderNum = orderNum;
     order.orderID = _checkOrderId;
@@ -384,7 +389,7 @@
                                    @"elec":@0,
                                    @"wash":@0,
 #warning 注意啦：测试价格0.01
-                                   @"appointMoney":@"0.01",
+                                   @"appointMoney":_priceLB.text,
                                    @"memberId":self.user.userID
                                    };
     
@@ -499,7 +504,8 @@
 
     }
 //    NSLog(@"%@%@",getUrl,parametersDic);
-    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+//    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [MBProgressHUD showAnimateHUDAddedTo:Window text:@"正在分配车位"];
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"%@",operation);
         NSDictionary *dic = responseObject;
@@ -516,7 +522,7 @@
             {
                 [MBProgressHUD hideAllHUDsForView:Window animated:YES];
 
-                [MBProgressHUD showSuccess:@"下单成功" toView:Window];
+                [MBProgressHUD showSuccess:@"车位分配成功" toView:Window];
                 
                 [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
             }else

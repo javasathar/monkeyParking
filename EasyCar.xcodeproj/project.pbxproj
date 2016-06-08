@@ -1744,6 +1744,7 @@
 				E454CEFC1C0C2AA000B3E51F /* 预约车位 */,
 				CED9BBB81B0CE51B00A498C8 /* Me */,
 				CFD6F7C41BEAFFD8002DF35A /* login */,
+				E4B5EF471C1555E80080321D /* 消息 */,
 				079800B91CCA026F00A44AFF /* newimage */,
 			);
 			name = 2016;
@@ -2650,7 +2651,6 @@
 				E44012081BF975B00029A413 /* 我的车位 */,
 				E4E23D8E1BF9C7FF00BC8C0D /* 我要取车 */,
 				E42FAA2D1BFC18BA000A76DC /* 充电&洗车 */,
-				E4B5EF471C1555E80080321D /* 消息 */,
 				E4B5EF4B1C1563770080321D /* 我的订单 */,
 				E4A5A7AF1C2288E300A27161 /* 添加车辆 */,
 				E4931CB21C47DBCF00C268F0 /* ZhuanZuXiangQingVC.h */,
@@ -2743,6 +2743,7 @@
 				E4B5EF451C1555BA0080321D /* MessageVC.m */,
 			);
 			name = "消息";
+			path = New;
 			sourceTree = "<group>";
 		};
 		E4B5EF4B1C1563770080321D /* 我的订单 */ = {

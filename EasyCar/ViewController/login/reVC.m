@@ -73,8 +73,19 @@
     
     [self Gbtn:nil];
     // Do any additional setup after loading the view from its nib.
+    
+    [self requestRegisterView];
 }
-
+#pragma mark 刷新注册图
+-(void)requestRegisterView
+{
+    NSString *getUrl = BaseURL@"regbg";
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:nil success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSLog(@"注册图：%@",responseObject);
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+    }];
+}
 - (void)left
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -254,7 +265,7 @@
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"phone"] = _phoneTF.text;
     dic[@"password"] = _passwordTF.text;
-    if (_recommend.text) {
+    if (_recommend.text.length == 6) {
         dic[@"promoCode"] = _recommend.text;
     }
     
@@ -378,5 +389,14 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
+#pragma mark 检测输入内容
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if ([textField isEqual:_recommend]) {
+        if (_recommend.text.length >= 6) {
+            _recommend.text = [_recommend.text substringToIndex:5];
+        }
+    }
+    return YES;
+}
 @end

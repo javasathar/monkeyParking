@@ -201,13 +201,13 @@
 }
 -(BOOL)isMonkeyWIFI
 {
-    return NO;
+//    return NO;
 
     NSDictionary* _wifiInfo = (NSDictionary *)[self fetchSSIDInfo];
     if([_wifiInfo[@"SSID"] length] > 10)
     {
-        if ([[_wifiInfo[@"SSID"] substringToIndex:10] isEqualToString:[wifiName substringToIndex:10]]) {
-                    NSLog(@"%@",[[NSString alloc] initWithData:_wifiInfo[@"SSIDDATA"] encoding:NSUTF8StringEncoding] );
+        if ([_wifiInfo[@"SSID"] isEqualToString:wifiName]) {
+            NSLog(@"%@",[[NSString alloc] initWithData:_wifiInfo[@"SSIDDATA"] encoding:NSUTF8StringEncoding] );
             return YES;
         }
     }

@@ -61,11 +61,11 @@
 #pragma mark 调支付视图
 - (NSString *)showPayAlertWithOrder:(Order *)order;
 #pragma mark 调优惠劵支付
--(void)gotoPreferential:(Order *)order orderID:(NSString *)orderId;
+-(void)gotoPreferential:(Order *)order;
 #pragma mark 调支付宝
-- (NSString *)gotoAliPay:(Order *)order orderID:(NSString *)orderId;
+- (NSString *)gotoAliPay:(Order *)order;
 #pragma mark 调微信支付
-- (NSString *)gotoWXPay:(Order *)order orderID:(NSString *)orderId;
+- (NSString *)gotoWXPay:(Order *)order;
 
 #pragma mark 支付结果处理（子类重写前需调用一遍父类方法）
 - (void)payResultHandle:(NSNotification *)notification;

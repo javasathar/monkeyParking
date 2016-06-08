@@ -24,9 +24,11 @@
 }
 #pragma mark 帮助中心
 - (IBAction)helpCenter:(id)sender {
+    [MBProgressHUD showMessag:@"敬请期待" toView:Window];
 }
 #pragma mark 活动
 - (IBAction)active:(id)sender {
+    [MBProgressHUD showMessag:@"敬请期待" toView:Window];
 }
 #pragma mark 意见反馈
 - (IBAction)idea:(id)sender {

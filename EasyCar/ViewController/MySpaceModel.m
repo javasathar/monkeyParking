@@ -13,20 +13,20 @@
 {
     self = [super init];
     if (self) {
-        self.orderId = dic[@"id"];
-        self.orderTime = dic[@"orderTime"];
+        self.orderId = [NSString stringWithFormat:@"%@",dic[@"id"]];
+        self.orderTime = [NSString stringWithFormat:@"%@",dic[@"orderTime"]];
         self.parkAddress = dic[@"parkAddress"];
 //        self.parkImg = dic[@"parkImg"];
 //        self.phone = dic[@"phone"];
 //        self.rentMoney = dic[@"rentMoney"];
-        self.rentTime = dic[@"rentTime"];
-        self.endTime = dic[@"endTime"];
-        self.memberId = dic[@"memberId"];
-        self.parkArea = dic[@"parkArea"];
-        self.parkNo = dic[@"parkNo"];
+        self.rentTime = [NSString stringWithFormat:@"%@",dic[@"rentTime"]];
+        self.endTime = [NSString stringWithFormat:@"%@",dic[@"endTime"]];
+        self.memberId = [NSString stringWithFormat:@"%@",dic[@"memberId"]];
+        self.parkArea = [NSString stringWithFormat:@"%@",dic[@"parkArea"]];
+        self.parkNo = [NSString stringWithFormat:@"%@",dic[@"parkNo"]];
         self.parkName = dic[@"parkName"];
-        self.parkspaceId = dic[@"parkspaceId"];
-        self.parkId = dic[@"parkId"];
+        self.parkspaceId = [NSString stringWithFormat:@"%@",dic[@"parkspaceId"]];
+        self.parkId = [NSString stringWithFormat:@"%@",dic[@"parkId"]];
         self.result = dic[@"result"];
     }
     return self;

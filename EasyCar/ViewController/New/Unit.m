@@ -82,6 +82,7 @@
     }
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:timeInterval];
+//    NSLog(@"timeInterval:%f",timeInterval);
     return [formatter stringFromDate:date];
 }
 
