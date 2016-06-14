@@ -2330,6 +2330,7 @@
 		CE3242941B08CDAB00C7AA7B /* MyCar */ = {
 			isa = PBXGroup;
 			children = (
+				E4A5A7AF1C2288E300A27161 /* 添加车辆 */,
 				CE3242951B08CDB800C7AA7B /* MyCarViewController.h */,
 				CE3242961B08CDB800C7AA7B /* MyCarViewController.m */,
 				CE68BFEF1B0A19260003F8A4 /* AddCarViewController.h */,
@@ -2652,7 +2653,6 @@
 				E4E23D8E1BF9C7FF00BC8C0D /* 我要取车 */,
 				E42FAA2D1BFC18BA000A76DC /* 充电&洗车 */,
 				E4B5EF4B1C1563770080321D /* 我的订单 */,
-				E4A5A7AF1C2288E300A27161 /* 添加车辆 */,
 				E4931CB21C47DBCF00C268F0 /* ZhuanZuXiangQingVC.h */,
 				E4931CB31C47DBCF00C268F0 /* ZhuanZuXiangQingVC.m */,
 				E4EDF1811C2959CB00A50AFD /* ConsumeDetailVC.h */,
@@ -2734,6 +2734,7 @@
 				E4E97C791C210E9200ADFF37 /* TianJiaCheLiangVC.m */,
 			);
 			name = "添加车辆";
+			path = ../New;
 			sourceTree = "<group>";
 		};
 		E4B5EF471C1555E80080321D /* 消息 */ = {
@@ -3958,6 +3959,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yt.monkeyParking;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -4004,6 +4006,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yt.monkeyParking;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

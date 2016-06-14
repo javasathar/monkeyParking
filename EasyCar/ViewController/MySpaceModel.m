@@ -28,6 +28,7 @@
         self.parkspaceId = [NSString stringWithFormat:@"%@",dic[@"parkspaceId"]];
         self.parkId = [NSString stringWithFormat:@"%@",dic[@"parkId"]];
         self.result = dic[@"result"];
+        self.rentType = dic[@"rentType"];
     }
     return self;
 }

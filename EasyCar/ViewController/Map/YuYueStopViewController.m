@@ -353,7 +353,7 @@
     order.productDescription = @"预约停车";
 #warning 注意啦：测试价格0.01
 //    order.amount = @"0.01";
-    order.amount = [NSString stringWithFormat:@"%.1f",[_priceLB.text floatValue]];
+    order.amount = truePrice;
     // 调支付
     order.orderNum = orderNum;
     order.orderID = _checkOrderId;
@@ -389,11 +389,11 @@
                                    @"elec":@0,
                                    @"wash":@0,
 #warning 注意啦：测试价格0.01
-                                   @"appointMoney":_priceLB.text,
+                                   @"appointMoney":[NSString stringWithFormat:@"%.0f",_park.appointFee],
                                    @"memberId":self.user.userID
                                    };
     
-    
+    NSLog(@"price:%@",_priceLB.text);
 #warning 测试用
 //    _checkOrderId = @"8aafdae854b7f1b20154bcaf877a0071";
 //    checkNum = 1;
@@ -412,45 +412,59 @@
                 if (dic[@"data"]) {
                     if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
                         _checkOrderId = dic[@"data"][@"orderid"];
-
-                    }else
-                    {
-                        _checkOrderId = dic[@"data"];
-
+                        if (!_checkOrderId) {
+                            _checkOrderId = dic[@"data"][@"orderId"];
+                        }
+                        if (_checkOrderId) {
+                            checkNum = 1;
+                            [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
+                        }else
+                        {
+                            k_orderIdError
+                        }
                     }
                 }
                 
-                checkNum = 1;
-                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
+                
             }
             
+        }else if([dic[@"status"] isEqual:@500])
+        {
+            [self showFunctionAlertWithTitle:@"是否重新预约" message:dic[@"msg"] functionName:@"重新预约" Handler:^{
+                    NSString *getUrl = BaseURL@"appointCancel";
+                if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+                    if (dic[@"data"][@"orderId"]) {
+                        _checkOrderId = dic[@"data"][@"orderId"];
+                    }else if (dic[@"data"][@"orderid"])
+                    {
+                        _checkOrderId = dic[@"data"][@"orderid"];
+                    }else
+                    {
+                        [MBProgressHUD showError:@"没有订单号" toView:Window];
+                    }
+                
+                    NSDictionary *parameterDic = @{@"memberId":self.user.userID,
+                                                   @"orderId":_checkOrderId,
+                                                   };
+                    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+                        [MBProgressHUD showSuccess:@"取消订单成功" toView:Window];
+                        [self yuyueSpace];
+                    } elseAction:^(NSDictionary *dic) {
+                        
+                    } failure:^(NSError *error) {
+                        
+                    }];
+                }
+            }];
         }
-//        else if([dic[@"status"] isEqual:@500])
-//        {
-//            [self showFunctionAlertWithTitle:@"是否重新预约" message:dic[@"msg"] functionName:@"重新预约" Handler:^{
-//                [self checkHaveAppointment:nil];
-
-//                    NSString *getUrl = BaseURL@"appointCancel";
-//                    NSDictionary *parameterDic = @{@"memberId":self.user.userID,
-//                                                   @"orderId":_checkOrderId,
-//                
-//                                                   };
-//                    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-//                
-//                    } elseAction:^(NSDictionary *dic) {
-//                        
-//                    } failure:^(NSError *error) {
-//                        
-//                    }];
-//                [self yuyueSpace];
-//            }];
-//        }
         else{
 //            NSLog(@"已预约：%@",dic);
-
+            
             [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
+            
         }
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        NSLog(@"error:%@\n%@",operation,error.debugDescription);
         [MBProgressHUD showError:@"预约失败" toView:Window];
     }];
 }
@@ -468,18 +482,25 @@
             if (dataArr.count > 0) {
                 AppointOrderModel *model = [[AppointOrderModel alloc] initWithDic:dataArr[0]];
                     NSString *getUrl = BaseURL@"appointCancel";
+                if (model.orderId) {
                     NSDictionary *parameterDic = @{@"memberId":self.user.userID,
-                                                   @"orderId":model.orderId,
-                
-                                                   };
+                                     @"orderId":model.orderId,
+                                     
+                                     };
                     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
                         NSLog(@"取消订单成功:%@",dic);
-
+                        
                     } elseAction:^(NSDictionary *dic) {
-                
+                        
                     } failure:^(NSError *error) {
-                
+                        
                     }];
+                }else
+                {
+                    k_orderIdError
+                }
+                
+                
             }
         }
         [self yuyueSpace];
@@ -502,6 +523,9 @@
     if (_checkOrderId) {
         parameterDic = @{@"id":_checkOrderId};
 
+    }else
+    {
+        k_orderIdError
     }
 //    NSLog(@"%@%@",getUrl,parametersDic);
 //    [MBProgressHUD showHUDAddedTo:Window animated:YES];
@@ -524,7 +548,21 @@
 
                 [MBProgressHUD showSuccess:@"车位分配成功" toView:Window];
                 
-                [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
+                if ([dataDic isKindOfClass:[NSDictionary class]]) {
+                    if (dataDic[@"orderid"]) {
+                        [self showPayAlertWithPrice:[NSString stringWithFormat:@"%.0f",_park.appointFee] and:dataDic[@"orderid"]];
+                    }else if (dataDic[@"orderId"])
+                    {
+                        [self showPayAlertWithPrice:[NSString stringWithFormat:@"%.0f",_park.appointFee] and:dataDic[@"orderId"]];
+                    }else
+                    {
+                        k_orderIdError
+                    }
+                }else
+                {
+                    k_orderIdError
+                }
+                
             }else
             {
                 [MBProgressHUD hideAllHUDsForView:Window animated:YES];
@@ -544,7 +582,7 @@
             }else if (checkNum == 3)
             {
                 [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-                [MBProgressHUD showError:dic[@"msg"] toView:Window];
+                [MBProgressHUD showError:@"车位分配失败，请稍后再试" toView:Window];
 
             }
         }
@@ -749,10 +787,18 @@
 - (void)gotoBalancePay:(Order *)order
 {
     NSString *postURL = PayURL@"balance";
-    NSDictionary *parameters = @{
-                                 @"orderId":order.orderID,
-                                 @"orderType":@1
-                                 };
+    NSDictionary *parameters;
+    if (order.orderID) {
+        parameters = @{
+                       @"orderId":order.orderID,
+                       @"orderType":@1
+                       };
+    }else
+    {
+        k_orderIdError
+        return;
+    }
+    
     
     [self postRequestURL:postURL parameters:parameters success:^(NSDictionary *dic) {
         [self performSelector:@selector(afterPaySucess) withObject:nil afterDelay:1];

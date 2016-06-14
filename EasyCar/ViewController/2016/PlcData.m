@@ -39,8 +39,8 @@ typedef enum {
     self = [super init];
     if (self) {
         _plcHost = @"199";                //plcIP  100~199
-        _plcGateway = @"192.168.1.";      //plc网关 默认192.168.1.1
-        _plcPort = @"8002";               //plc端口 默认8002
+        _plcGateway = @"192.168.10.";      //plc网关 默认192.168.10.1
+        _plcPort = @"5000";               //plc端口 默认8002
         _plcState = @"@00RD2002";             //查询plc状态
         _plcParkingStr = @"@00WD2000";        //手动停车
         _plcTakingStr = @"@00WD2001";         //手动取车

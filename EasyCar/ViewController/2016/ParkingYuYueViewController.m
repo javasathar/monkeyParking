@@ -32,6 +32,7 @@
     self.parkAddress.text = _appointModel.parkAddress;
     self.parkCar.text = _appointModel.appointCarPlate;
     self.parkPrice.text = _appointModel.appointMoney;
+    self.parkAreaNumLB.text = [NSString stringWithFormat:@"%@  %@",_appointModel.parkarea,_appointModel.parkno];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -47,12 +48,20 @@
 {
     NSNumber *opration = @1;
     NSString *getUrl = BaseURL@"appointParkCar";
-    NSDictionary *parameterDic = @{
-                                   @"memberid":self.user.userID,
-                                   @"orderid":_appointModel.orderId,
-                                   @"spaceid":_appointModel.spaceid
-                                   
-                                   };
+    NSDictionary *parameterDic;
+    if(_appointModel.orderId && _appointModel.spaceid)
+    {
+        parameterDic = @{
+                         @"memberId":self.user.userID,
+                         @"orderId":_appointModel.orderId,
+                         @"spaceId":_appointModel.spaceid
+                         };
+    }else
+    {
+        k_orderIdError
+        return;
+    }
+    
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
         [self checkControlResult:_appointModel.orderId];
         [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
@@ -67,30 +76,39 @@
 }
 #pragma mark 取消预约
 - (IBAction)cancelYuYue:(id)sender {
-        NSString *getUrl = BaseURL@"appointCancel";
-        NSDictionary *parameterDic = @{@"memberId":self.user.userID,
-                                       @"orderId":_appointModel.orderId,
-                                       };
-        [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-            [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
-            [self.navigationController popViewControllerAnimated:YES];
-        } elseAction:^(NSDictionary *dic) {
-            [self.navigationController popViewControllerAnimated:YES];
-
-        } failure:^(NSError *error) {
-            
-        }];
+    NSString *getUrl = BaseURL@"appointCancel";
+    NSDictionary *parameterDic;
+    if(_appointModel.orderId)
+    {
+        parameterDic = @{
+                         @"memberId":self.user.userID,
+                         @"orderId":_appointModel.orderId,
+                         };
+    }else
+    {
+        k_orderIdError
+        return;
+    }
+    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+        [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
+        [self.navigationController popViewControllerAnimated:YES];
+    } elseAction:^(NSDictionary *dic) {
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 #pragma mark 判断操作距离
 -(void)checkDistancePass
 {
@@ -124,17 +142,17 @@
     //如果不需要实时定位，使用完即使关闭定位服务
     [_locationManager stopUpdatingLocation];
     
-//    CLLocation* dist=[[CLLocation alloc] initWithLatitude:_park.parklat_R longitude:_park.parklon_R];
-//    if ([nowLocation distanceFromLocation:dist] < 50) {
-//        [self controlParking];
-//    }else
-//    {
-//        [MBProgressHUD showResult:NO text:@"安全起见，请在车库旁操作" delay:2.0f];
-//    }
+    //    CLLocation* dist=[[CLLocation alloc] initWithLatitude:_park.parklat_R longitude:_park.parklon_R];
+    //    if ([nowLocation distanceFromLocation:dist] < 50) {
+    //        [self controlParking];
+    //    }else
+    //    {
+    //        [MBProgressHUD showResult:NO text:@"安全起见，请在车库旁操作" delay:2.0f];
+    //    }
     if (locationNum == 0) {
         locationNum = 1;
         [self checkNestestParkingFromNet];
-
+        
     }
 }
 -(void)checkNestestParkingFromNet
@@ -172,7 +190,7 @@
                     }else
                     {
                         [MBProgressHUD showMessag:@"安全起见，请离停车场近点" toView:Window];
-
+                        
                     }
                     break;
                 }

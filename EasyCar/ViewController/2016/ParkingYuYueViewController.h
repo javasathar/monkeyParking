@@ -14,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *parkAddress;
 @property (weak, nonatomic) IBOutlet UILabel *parkCar;
 @property (weak, nonatomic) IBOutlet UILabel *parkPrice;
+@property (weak, nonatomic) IBOutlet UILabel *parkAreaNumLB;
 
 @end

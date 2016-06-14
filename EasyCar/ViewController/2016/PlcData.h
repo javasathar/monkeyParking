@@ -19,7 +19,7 @@ typedef void(^failed)(id obj);
 //plc指令集
 @property (nonatomic ,strong) NSString *plcHost;    //plcIP  100~199
 @property (nonatomic ,strong) NSString *plcGateway; //plc网关 默认192.168.1.1
-@property (nonatomic ,strong) NSString *plcPort;    //plc端口 默认8002
+@property (nonatomic ,strong) NSString *plcPort;    //plc端口 默认5000
 @property (nonatomic ,strong) NSString *plcState;  //查询plc状态
 @property (nonatomic ,strong) NSString *plcParkingStr;   //手动停车
 @property (nonatomic ,strong) NSString *plcTakingStr;    //手动取车

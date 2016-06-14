@@ -92,7 +92,7 @@
     NSString *getUrl = BaseURL@"myRentSpace";
     NSDictionary *parametersDic = @{@"memberId":[UserManager manager].userID,
 //                                    @"pageNo":@1,
-//                                    @"pageSize":@10,
+//                                ;    @"pageSize":@10,
                                     };
 //    NSLog(@"%@?memberId:%@&pageNo:1&pageSize:20",getUrl,[UserManager manager].userID);
 
@@ -154,6 +154,10 @@
     MySpaceModel *model = self.dataArr[sender.tag - 20000];
     _clickBtn = sender;
     
+    if ([model.rentType isEqualToNumber:@2]) {
+        [MBProgressHUD showMessag:@"车位上有其他车，整租尚未生效" toView:Window];
+        return;
+    }
     UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"操控车库" message:[NSString stringWithFormat:@"区域：%@  车位号：%@",model.parkArea,model.parkNo] preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
@@ -224,13 +228,18 @@
         NSLog(@"getDic%@",dic);
         [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
         if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
-            [self checkRentTranResult:dic[@"data"][@"orderid"]];
+            NSString *netOrderId = dic[@"data"][@"orderid"];
+            if (!netOrderId) {
+                netOrderId = dic[@"data"][@"orderId"];
+
+            }
+            [self checkRentTranResult:netOrderId];
         
         
         //保存转租记录到本地
         NSUserDefaults *users = [NSUserDefaults standardUserDefaults];
         NSMutableArray *rentTranList = [NSMutableArray arrayWithArray:[users valueForKey:@"rentTranList"]];
-        [rentTranList addObject:@{@"parkSpaceId":model.parkspaceId,@"orderId":dic[@"data"][@"orderid"]}];
+        [rentTranList addObject:@{@"parkSpaceId":model.parkspaceId,@"orderId":netOrderId}];
             [users setObject:rentTranList forKey:@"rentTranList"];
             [users synchronize];
         }
@@ -336,7 +345,16 @@
         NSLog(@"专用车位停取车：%@",dic);
         if([dic[@"data"] isKindOfClass:[NSDictionary class]])
         {
-            [self checkControlResult:dic[@"data"][@"orderid"]];
+            NSString *netOrderId = dic[@"data"][@"orderid"];
+            if (!netOrderId) {
+                netOrderId = dic[@"data"][@"orderId"];
+            }
+            if (netOrderId) {
+                [self checkControlResult:netOrderId];
+            }else
+            {
+                [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];
+            }
             
         }
         [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];

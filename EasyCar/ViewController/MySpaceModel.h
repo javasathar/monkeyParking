@@ -24,5 +24,6 @@
 @property (nonatomic ,strong)NSString *parkName;
 @property (nonatomic ,strong)NSString *parkNo;
 @property (nonatomic ,strong)NSNumber *result;
+@property (nonatomic ,strong)NSNumber *rentType;
 -(id)initWithDict:(NSDictionary *)dic;
 @end

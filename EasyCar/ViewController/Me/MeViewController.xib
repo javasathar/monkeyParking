@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -42,6 +43,10 @@
                         <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_img.png" translatesAutoresizingMaskIntoConstraints="NO" id="6we-td-HsU">
                             <rect key="frame" x="129" y="16" width="64" height="64"/>
                             <gestureRecognizers/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="6we-td-HsU" secondAttribute="height" multiplier="1:1" id="19V-1Y-eUu"/>
+                                <constraint firstAttribute="width" constant="64" id="xx3-qn-Szc"/>
+                            </constraints>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="CuF-5R-KMb" appends="YES" id="knd-n4-QGN"/>
                             </connections>

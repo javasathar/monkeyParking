@@ -95,7 +95,7 @@
     }
     NSString *getUrl = BaseURL@"recharge";
     NSDictionary *parameterDic = @{
-                                    @"memberid":self.user.userID,
+                                    @"memberId":self.user.userID,
                                     @"money":_sMoneyBtn.titleLabel.text
                                    };
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
@@ -103,6 +103,12 @@
         if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
             if (dic[@"data"][@"orderid"]) {
                 [self gotoPay:dic[@"data"][@"orderid"]];
+            }else if(dic[@"data"][@"orderId"])
+            {
+                [self gotoPay:dic[@"data"][@"orderId"]];
+            }else
+            {
+                [MBProgressHUD showError:@"数据出错，订单号为空" toView:Window];
             }
         }
     } elseAction:^(NSDictionary *dic) {

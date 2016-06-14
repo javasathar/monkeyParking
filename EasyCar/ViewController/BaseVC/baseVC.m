@@ -815,17 +815,22 @@
     NSDictionary *parameterDic = @{
                                    @"id":checkOrderId
                                    };
-    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        NSDictionary *dic = responseObject;
         NSLog(@"getDic:%@",dic);
         if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
             NSDictionary *dict = dic[@"data"];
             if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@1]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@1])) {
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
                 [MBProgressHUD showSuccess:@"车位下放中" toView:Window];
                 [self.navigationController popToRootViewControllerAnimated:YES];
                 controlNum = 0 ;
             }else if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@0]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@0]))
             {
                 controlNum = 0 ;
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
                 [MBProgressHUD showError:@"请重新操作" toView:Window];
             }else
             {
@@ -833,14 +838,14 @@
                     [self performSelector:@selector(checkControlResult) withObject:nil afterDelay:2.0f];
                     controlNum ++ ;
                 }
+                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
                 //                [self checkControlResult:orderId];
             }
         }
-        
-    } elseAction:^(NSDictionary *dic) {
-        
-    } failure:^(NSError *error) {
-        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
     }];
 }
 #pragma mark 百度坐标转高德坐标

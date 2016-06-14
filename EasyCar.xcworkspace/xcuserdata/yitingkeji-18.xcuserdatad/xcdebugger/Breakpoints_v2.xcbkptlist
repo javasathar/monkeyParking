@@ -536,11 +536,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EasyCar/ViewController/New/ChongZhiVC.m"
-            timestampString = "487048071.330198"
+            timestampString = "487565050.898709"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
             landmarkName = "-onChongZhi:"
             landmarkType = "5">
          </BreakpointContent>
@@ -552,11 +552,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EasyCar/ViewController/New/ChongZhiVC.m"
-            timestampString = "487048071.330198"
+            timestampString = "487565050.898709"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
+            startingLineNumber = "140"
+            endingLineNumber = "140"
             landmarkName = "-requestAfterPaySuccess"
             landmarkType = "5">
          </BreakpointContent>
@@ -622,6 +622,166 @@
             startingLineNumber = "688"
             endingLineNumber = "688"
             landmarkName = "-gotoWXPay:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487583825.007904"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "226"
+            endingLineNumber = "226"
+            landmarkName = "-payBtn:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[MySpaceOrderViewController payBtn:]"
+                  moduleName = "EasyCar"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yitingkeji-18/Desktop/monkeyParking/EasyCar/ViewController/MySpaceOrderViewController.m"
+                  timestampString = "487583825.079139"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "226"
+                  endingLineNumber = "226"
+                  offsetFromSymbolStart = "72">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__37-[MySpaceOrderViewController payBtn:]_block_invoke"
+                  moduleName = "EasyCar"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yitingkeji-18/Desktop/monkeyParking/EasyCar/ViewController/MySpaceOrderViewController.m"
+                  timestampString = "487583825.079327"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "227"
+                  endingLineNumber = "227"
+                  offsetFromSymbolStart = "36">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487584453.15171"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
+            landmarkName = "-checkOrderEffectiveness"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487584453.15171"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
+            landmarkName = "-checkOrderEffectiveness"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487584453.15171"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "363"
+            endingLineNumber = "363"
+            landmarkName = "-checkOrderEffectiveness"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487584453.15171"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "360"
+            endingLineNumber = "360"
+            landmarkName = "-checkOrderEffectiveness"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__53-[MySpaceOrderViewController checkOrderEffectiveness]_block_invoke"
+                  moduleName = "EasyCar"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yitingkeji-18/Desktop/monkeyParking/EasyCar/ViewController/MySpaceOrderViewController.m"
+                  timestampString = "487584225.893802"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "330"
+                  endingLineNumber = "330"
+                  offsetFromSymbolStart = "732">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__53-[MySpaceOrderViewController checkOrderEffectiveness]_block_invoke_2"
+                  moduleName = "EasyCar"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yitingkeji-18/Desktop/monkeyParking/EasyCar/ViewController/MySpaceOrderViewController.m"
+                  timestampString = "487584225.893945"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "332"
+                  endingLineNumber = "332"
+                  offsetFromSymbolStart = "48">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EasyCar/ViewController/MySpaceOrderViewController.m"
+            timestampString = "487584453.15171"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "337"
+            endingLineNumber = "337"
+            landmarkName = "-checkOrderEffectiveness"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -183,9 +183,9 @@
                 if ([model.parkNo isEqualToString:[NSString stringWithFormat:@"%ld",(long)selectBtn.tag]]) {
                     getUrl = BaseURL@"appointTakeCar";
                     parameterDic = @{
-                                     @"memberid":self.user.userID,
-                                     @"spaceid":model.dataIdentifier,
-                                     @"orderid":parkNote[@"parkOrderId"]
+                                     @"memberId":self.user.userID,
+                                     @"spaceId":model.dataIdentifier,
+                                     @"orderId":parkNote[@"parkOrderId"]
                                      };
                 }
             }
@@ -195,7 +195,16 @@
             [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
             if([dic[@"data"] isKindOfClass:[NSDictionary class]])
             {
-                [self checkControlResult:dic[@"data"][@"orderid"]];
+                NSString *netOrderId = dic[@"data"][@"orderid"];
+                if (!netOrderId) {
+                    netOrderId = dic[@"data"][@"orderId"];
+                }
+                if (netOrderId) {
+                    [self checkControlResult:netOrderId];
+                }else
+                {
+                    [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];
+                }
                 
             }
             if ([_opration isEqualToNumber:@1]) {
@@ -258,12 +267,12 @@
                 NSDictionary *parkingNote = [[NSUserDefaults standardUserDefaults] valueForKey:@"parkingNote"];
                 [self showFunctionAlertWithTitle:@"请确认" message:[NSString stringWithFormat:@"请确认%@ %@是不是之前停的车位，若不是，请联系现场管理员",parkingNote[@"parkArea"],parkingNote[@"parkNo"]] functionName:@"确认（是）" Handler:^{
                     [self controlParking];
-
+                    
                 }];
             }else
             {
                 [self controlParking];
-
+                
             }
         }
     }else

@@ -222,6 +222,7 @@
 //                                   @"rentMoney":@"0.01",
                                    @"rentMoney":_totalPrice.text
                                    };
+    NSLog(@"totalPrice:%@",_totalPrice.text);
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         NSDictionary *dic = (NSDictionary *)responseObject;
         NSLog(@"结果：%@  %@",dic,dic[@"msg"]);
@@ -230,16 +231,55 @@
             //                [MBProgressHUD showSuccess:dic[@"msg"] toView:Window];
             if([dic[@"data"] isKindOfClass:[NSDictionary class]])
             {
-                _checkOrderId = dic[@"data"][@"orderid"];
+                _checkOrderId = dic[@"data"][@"orderId"];
+                if (!_checkOrderId) {
+                    _checkOrderId = dic[@"data"][@"orderid"];
+                }
                 
-                checkNum = 1;
+                if (_checkOrderId) {
+                    checkNum = 1;
+                    [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
+                    //                [self showPayAlertWithPrice:_totalPrice.text and:_checkOrderId];
+                }else
+                {
+                    [MBProgressHUD showError:@"数据出错，订单号为空" toView:Window];
+                }
                 
-                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:1.0f];
             }
             
-        }else{
+        }else if([dic[@"status"] isEqual:@500]){
             //            NSLog(@"已预约：%@",dic);
             
+//            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+#warning 需要改成取消整租订单或者不要这段
+            [self showFunctionAlertWithTitle:@"是否重新申请" message:dic[@"msg"] functionName:@"重新申请" Handler:^{
+                NSString *getUrl = BaseURL@"appointCancel";
+                if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+                    if (dic[@"data"][@"orderId"]) {
+                        _checkOrderId = dic[@"data"][@"orderId"];
+                    }else if (dic[@"data"][@"orderid"])
+                    {
+                        _checkOrderId = dic[@"data"][@"orderid"];
+                    }else
+                    {
+                        [MBProgressHUD showError:@"没有订单号" toView:Window];
+                    }
+                    
+                    NSDictionary *parameterDic = @{@"memberId":self.user.userID,
+                                                   @"orderId":_checkOrderId,
+                                                   };
+                    [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
+                        [MBProgressHUD showSuccess:@"取消订单成功" toView:Window];
+                        [self payBtn:nil];
+                    } elseAction:^(NSDictionary *dic) {
+                        
+                    } failure:^(NSError *error) {
+                        
+                    }];
+                }
+            }];
+        }else
+        {
             [MBProgressHUD showError:dic[@"msg"] toView:Window];
         }
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -255,7 +295,7 @@
     NSString *getUrl = BaseURL@"getStatus/rentOrder";
     NSDictionary *parametersDic = @{@"id":_checkOrderId};
         NSLog(@"%@%@",getUrl,parametersDic);
-    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [MBProgressHUD showAnimateHUDAddedTo:Window text:@"正在分配车位"];
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parametersDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"%@",operation);
         NSDictionary *dic = responseObject;
@@ -274,7 +314,15 @@
                     
                     [MBProgressHUD showSuccess:@"下单成功" toView:Window];
                     
-                    [self showPayAlertWithPrice:@"0.01" and:dataDic[@"orderid"]];
+                    if (dataDic[@"orderid"]) {
+                        [self showPayAlertWithPrice:[NSString stringWithFormat:@"%@",_totalPrice.text] and:dataDic[@"orderid"]];
+                    }else if(dataDic[@"orderId"])
+                    {
+                    [self showPayAlertWithPrice:[NSString stringWithFormat:@"%@",_totalPrice.text] and:dataDic[@"orderId"]];
+                    }else
+                    {
+                        [MBProgressHUD showError:@"数据出错，订单号为空" toView:Window];
+                    }
                 }else
                 {
                     if (checkNum < 3) {
@@ -282,7 +330,7 @@
                     }else if(checkNum == 3){
                         //                [MBProgressHUD showSuccess:@"服务器订单数据为空" toView:Window];
                         [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-                        [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
+                        [MBProgressHUD showMessag:@"车位分配失败，请稍后再试" toView:Window];
                     }
                 }
                 
@@ -293,23 +341,26 @@
                 }else if(checkNum == 3){
                     [MBProgressHUD hideAllHUDsForView:Window animated:YES];
                     
-                    [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
+                    [MBProgressHUD showMessag:@"车位分配失败，请稍后再试" toView:Window];
                 }
                 
             }
             
         }
-        else
+        else if([dic[@"status"] isEqual:@(500)])
         {
             //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
-            if (checkNum < 3) {
-                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
-            }else if(checkNum == 3){
-                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-                
-                [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
-            }
-            
+//            if (checkNum < 3) {
+//                [self performSelector:@selector(checkOrderEffectiveness) withObject:nil afterDelay:++checkNum];
+//            }else if(checkNum == 3){
+//                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+//                
+//                [MBProgressHUD showMessag:@"车位分配失败，请稍后再试" toView:Window];
+//            }
+            [MBProgressHUD showError:dic[@"msg"] toView:Window];
+        }else
+        {
+            [MBProgressHUD showError:dic[@"msg"] toView:Window];
         }
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -330,7 +381,7 @@
     order.productName = [NSString stringWithFormat:@"%@专用车位",_car.carPlate];
     order.productDescription = @"专用车位";
 #warning 注意啦：测试价格0.01
-    order.amount = @"0.01";//[NSString stringWithFormat:@"%.1f",_appointPrice];
+    order.amount = truePrice;//[NSString stringWithFormat:@"%.1f",_appointPrice];
     // 调支付
     order.orderID = _checkOrderId;
     order.payType = @2;//专用订单
