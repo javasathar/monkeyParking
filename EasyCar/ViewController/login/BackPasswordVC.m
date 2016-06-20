@@ -136,6 +136,7 @@
     }
     else
     {
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         [MBProgressHUD showError:@"您输入的手机号错误" toView:Window];
     }
 }

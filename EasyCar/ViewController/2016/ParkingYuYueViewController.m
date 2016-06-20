@@ -63,19 +63,46 @@
     }
     
     [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
-        [self checkControlResult:_appointModel.orderId];
-        [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        NSLog(@"预约停车操控车库：%@",dic);
+        if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
+            NSString *netOrderId = dic[@"data"][@"parkinoutId"];
+            if (!netOrderId) {
+                netOrderId = dic[@"data"][@"parkinoutid"];
+            }
+            if (netOrderId) {
+                [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
+
+                [self safeParkingNote:nestestPark andParkArea:_appointModel.parkarea andParkNo:_appointModel.parkno andControlType:2 andOrderId:_appointModel.orderId];
+
+                [self checkControlResult:netOrderId andOpration:@1];
+//                [self.navigationController popToRootViewControllerAnimated:YES];
+
+            }else
+            {
+                [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];
+            }
+
+            
+        }else
+        {
+            [MBProgressHUD showError:@"数据异常，订单为空" toView:Window];
+        }
         
-        [self safeParkingNote:nestestPark andParkArea:_appointModel.parkarea andParkNo:_appointModel.parkno andControlType:2 andOrderId:_appointModel.orderId];
     } elseAction:^(NSDictionary *dic) {
         
     } failure:^(NSError *error) {
         
     }];
 }
-#pragma mark 取消预约
+#pragma mark 取消预约按钮
 - (IBAction)cancelYuYue:(id)sender {
+    [self showFunctionAlertWithTitle:@"确认取消" message:@"超过五分钟将无法退回预约费" functionName:@"确认" Handler:^{
+        [self cancelAppoint];
+    }];
+}
+#pragma mark 取消预约
+-(void)cancelAppoint
+{
     NSString *getUrl = BaseURL@"appointCancel";
     NSDictionary *parameterDic;
     if(_appointModel.orderId)
@@ -99,7 +126,6 @@
         
     }];
 }
-
 /*
  #pragma mark - Navigation
  

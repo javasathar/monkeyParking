@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -106,6 +106,7 @@
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="Th5-FA-gVw" secondAttribute="bottom" constant="10" id="I3s-Bn-Zpg"/>
                         <constraint firstItem="ABY-Eo-CyG" firstAttribute="top" secondItem="VG5-ex-tQi" secondAttribute="top" constant="12" id="IbR-Pu-zcb"/>
+                        <constraint firstAttribute="trailing" secondItem="ABY-Eo-CyG" secondAttribute="trailing" id="Xpj-TE-UgJ"/>
                         <constraint firstItem="Th5-FA-gVw" firstAttribute="leading" secondItem="VG5-ex-tQi" secondAttribute="leading" id="cMZ-kr-Yj6"/>
                         <constraint firstItem="Th5-FA-gVw" firstAttribute="top" secondItem="VG5-ex-tQi" secondAttribute="top" constant="11" id="dZF-x0-mIV"/>
                         <constraint firstAttribute="width" secondItem="VG5-ex-tQi" secondAttribute="height" multiplier="287:53" id="gzn-pu-dVl"/>
@@ -118,8 +119,7 @@
                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="6位以上英文字母或数字" clearsOnBeginEditing="YES" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="w06-nA-aGZ">
                             <rect key="frame" x="35" y="12" width="247" height="30"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="30" id="39l-OQ-YRN"/>
-                                <constraint firstAttribute="width" secondItem="w06-nA-aGZ" secondAttribute="height" multiplier="247:30" id="mfb-Ye-hQ2"/>
+                                <constraint firstAttribute="height" constant="30" id="h1o-4R-aWE"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" returnKeyType="go"/>
@@ -137,11 +137,12 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="JF7-0P-ujM" firstAttribute="leading" secondItem="iEm-Al-W5h" secondAttribute="leading" id="0ri-ZC-tLc"/>
-                        <constraint firstItem="w06-nA-aGZ" firstAttribute="leading" secondItem="JF7-0P-ujM" secondAttribute="trailing" constant="3" id="EOe-Gf-TOU"/>
                         <constraint firstAttribute="width" secondItem="iEm-Al-W5h" secondAttribute="height" multiplier="287:53" id="SO2-KV-icl"/>
-                        <constraint firstItem="w06-nA-aGZ" firstAttribute="top" secondItem="iEm-Al-W5h" secondAttribute="top" constant="12" id="Tmt-yu-gKb"/>
+                        <constraint firstItem="w06-nA-aGZ" firstAttribute="top" secondItem="iEm-Al-W5h" secondAttribute="top" constant="12" id="VfZ-51-c6w"/>
+                        <constraint firstItem="w06-nA-aGZ" firstAttribute="leading" secondItem="JF7-0P-ujM" secondAttribute="trailing" constant="3" id="XD2-D0-c9M"/>
                         <constraint firstAttribute="bottom" secondItem="JF7-0P-ujM" secondAttribute="bottom" constant="10" id="dR4-2e-aBY"/>
                         <constraint firstItem="JF7-0P-ujM" firstAttribute="top" secondItem="iEm-Al-W5h" secondAttribute="top" constant="11" id="pch-1X-Ixw"/>
+                        <constraint firstAttribute="trailing" secondItem="w06-nA-aGZ" secondAttribute="trailing" constant="5" id="sZu-fv-MCj"/>
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="忘记密码？" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uak-mm-pIg">

@@ -78,8 +78,7 @@
 #pragma mark 保存停车记录
 -(void)safeParkingNote:(Park *)park andParkArea:(NSString *)parkArea andParkNo:(NSString *)parkNo andControlType:(NSInteger)type andOrderId:(NSString *)orderId;
 #pragma mark 查询操作结果
--(void)checkControlResult:(NSString *)orderId;
-
+-(void)checkControlResult:(NSString *)orderId andOpration:(NSNumber *)opration;
 
 #pragma mark 百度坐标转高德坐标
 - (CLLocationCoordinate2D)GCJ02FromBD09:(CLLocationCoordinate2D)coor;

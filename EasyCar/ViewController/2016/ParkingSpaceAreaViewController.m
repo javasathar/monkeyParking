@@ -66,51 +66,16 @@
     {
         [self showParkingPlc];
     }
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     if(_operateState)
     {
         [self checkParkingSpaceList];
     }
-}
-#warning ???
-#pragma mark 刷新数据？
--(void)requestParkingSpaceList
-{
-    NSString *getUrl = BaseURL@"parkSpaceList";
-    NSDictionary *parameterDic = @{
-                                   @"parkId":_park.ID
-                                   };
-    AFHTTPRequestOperationManager *man = [AFHTTPRequestOperationManager manager];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    [man GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"%@",operation);
-        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
-        NSDictionary *dic = responseObject;
-        NSLog(@"getDic:%@",dic);
-        if ([dic[@"status"] isEqual:@(200)]) {
-            if ([[dic[@"data"] class] isSubclassOfClass:[NSMutableArray class]]) {
-                NSArray *arr = dic[@"data"];
-                [self.dataArr removeAllObjects];
-                for (NSDictionary *dict in arr) {
-                    ParkingSpaceModel *model = [[ParkingSpaceModel alloc] initWithDictionary:dict];
-                    //                    NSLog(@"test%@",model.parkId);
-                    [self.dataArr addObject:model];
-                }
-            }
-        }
-        else
-        {
-            //            [MBProgressHUD showError:dic[@"msg"] toView:Window];
-            [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
-        }
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        //        NSLog(@"%@",operation);
-        
-        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
-        NSLog(@"报错：%@", [error localizedDescription]);
-        [MBProgressHUD showError:@"网络加载出错" toView:Window];
-    }];
-
 }
 #pragma mark 查询车库车位数据
 -(void)checkParkingSpaceList
@@ -126,11 +91,12 @@
         NSLog(@"%@",operation);
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         NSDictionary *dic = responseObject;
-        NSLog(@"getDic:%@",dic);
+//        NSLog(@"getDic:%@",dic);
         if ([dic[@"status"] isEqual:@(200)]) {
             if ([[dic[@"data"] class] isSubclassOfClass:[NSMutableArray class]]) {
                 NSArray *arr = dic[@"data"];
-                [self.dataArr removeAllObjects];
+//                [self.dataArr removeAllObjects];
+                _dataArr = nil;
                 for (NSDictionary *dict in arr) {
                     ParkingSpaceModel *model = [[ParkingSpaceModel alloc] initWithDictionary:dict];
 //                    NSLog(@"test%@",model.parkId);
@@ -222,6 +188,7 @@
         vc.park = _park;
         vc.parkArea = sender.titleLabel.text;
         vc.opration = _opration;
+        [self.spaceArr removeAllObjects];
         for (ParkingSpaceModel *model in self.dataArr) {
             if ([vc.parkArea isEqualToString:[model.parkArea substringWithRange:NSMakeRange(0, 1)]]) {
                 [self.spaceArr addObject:model];
@@ -229,7 +196,7 @@
         }
         if (self.spaceArr.count > 0) {
             vc.spaceArr = self.spaceArr;
-
+//            NSLog(@"spaceArr:%@",vc.spaceArr);
         }
         if(_parkingNote)
         {

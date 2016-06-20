@@ -325,12 +325,13 @@
     NSDictionary *parameterDic = @{
                                    @"memberId":self.user.userID
                                    };
+    [MBProgressHUD showAnimateHUDAddedTo:Window text:@"请稍后"];
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         NSLog(@"%@",operation);
-        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
         NSDictionary *dic = responseObject;
         //        NSLog(@"getDic:%@%@",dic,dic[@"msg"]);
         if ([dic[@"status"] isEqual:@(200)]) {
+            [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
             NSLog(@"检查是否有预约:%@",dic);
             if (![dic[@"data"] isEqual:[NSNull null]])  {
                 NSArray *dataArr = dic[@"data"];
@@ -355,6 +356,8 @@
 //            [MBProgressHUD showMessag:dic[@"msg"] toView:Window];
         }
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];// 动画隐藏
+
         NSLog(@"error:%@\n%@",error.localizedDescription,operation);
     }];
     return nil;
@@ -466,13 +469,16 @@
                                    @"pageSize":[NSString stringWithFormat:@"%d",10],
                                    @"pageNo":[NSString stringWithFormat:@"%ld",(long)1]
                                    };
+//    [MBProgressHUD showAnimateExitHUDAddedTo:Window text:@"请稍后"];
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
         NSDictionary *dic = responseObject;
         //        NSLog(@"dic:%@",dic);
         if ([dic[@"status"] isEqual:@(200)]) {
             
-            [MBProgressHUD hideAllHUDsForView:Window animated:YES];
             // 建模（车库）
+            nestestPark = nil;
             for (NSDictionary *tempDic in dic[@"data"]) {
                 //                NSLog(@"parkList:%@",tempDic);
                 Park *p = [[Park alloc] mj_setKeyValues:tempDic];
@@ -509,6 +515,8 @@
         }
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         NSLog(@"报错：%@", [error localizedDescription]);
+        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+
         [MBProgressHUD showError:@"网络加载出错" toView:self.view];
     }];
 }

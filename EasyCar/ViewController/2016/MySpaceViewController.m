@@ -155,10 +155,10 @@
     _clickBtn = sender;
     
     if ([model.rentType isEqualToNumber:@2]) {
-        [MBProgressHUD showMessag:@"车位上有其他车，整租尚未生效" toView:Window];
+        [MBProgressHUD showMessag:[NSString stringWithFormat:@"%@库%@车位上有其他车，整租尚未生效",[model.parkArea substringWithRange:NSMakeRange(0, 1)],model.parkNo] toView:Window];
         return;
     }
-    UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"操控车库" message:[NSString stringWithFormat:@"区域：%@  车位号：%@",model.parkArea,model.parkNo] preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"操控车库" message:[NSString stringWithFormat:@"区域：%@库  车位号：%@",[model.parkArea substringWithRange:NSMakeRange(0, 1)],model.parkNo] preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
@@ -350,7 +350,7 @@
                 netOrderId = dic[@"data"][@"orderId"];
             }
             if (netOrderId) {
-                [self checkControlResult:netOrderId];
+                [self checkControlResult:netOrderId andOpration:@9];
             }else
             {
                 [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];

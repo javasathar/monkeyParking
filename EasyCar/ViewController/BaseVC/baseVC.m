@@ -20,6 +20,7 @@
     BOOL isAlertView;
     NSInteger controlNum ;//检查操控结果次数
     NSString *checkOrderId;//检查操控结果订单
+    NSNumber *checkControlOpration;//操控方式：@1停车  @2取车
 }
 @end
 
@@ -561,10 +562,10 @@
         [self gotoBalancePay:blockOrder];
     }]];
     
-//    [alertCtl addAction:[UIAlertAction actionWithTitle:@"优惠劵支付" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//        
-//        [self gotoPreferential:blockOrder];
-//    }]];
+    //    [alertCtl addAction:[UIAlertAction actionWithTitle:@"优惠劵支付" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    //
+    //        [self gotoPreferential:blockOrder];
+    //    }]];
     
     [self presentViewController:alertCtl animated:YES completion:nil];
     
@@ -625,14 +626,14 @@
     NSLog(@"%@注册了支付通知\n", self);
     
     NSString *postURL = PayURL@"alipay";
-//    NSDictionary *parameterDic = @{@"orderId":order.orderID,
-//                                   @"orderType":order.payType
-//                                   };
+    //    NSDictionary *parameterDic = @{@"orderId":order.orderID,
+    //                                   @"orderType":order.payType
+    //                                   };
     NSMutableDictionary *parameterDic = [NSMutableDictionary new];
     [parameterDic setObject:order.payType forKey:@"orderType"];
     if (order.orderID) {
         [parameterDic setObject:order.orderID forKey:@"orderId"];
-
+        
     }
     NSLog(@"parameteDic:%@",parameterDic);
     [self postRequestURL:postURL parameters:parameterDic success:^(NSDictionary *dic) {
@@ -684,7 +685,7 @@
     NSString *postURL = PayURL@"weixin";
     NSMutableDictionary *parameterDic = [NSMutableDictionary new];
     [parameterDic setObject:order.payType forKey:@"orderType"];
-//    [parameterDic setValue:order.payType forKey:@"orderType"];
+    //    [parameterDic setValue:order.payType forKey:@"orderType"];
     if (order.orderID) {
         [parameterDic setObject:order.orderID forKey:@"orderId"];
         
@@ -802,23 +803,24 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 #pragma mark 查询操作结果
--(void)checkControlResult:(NSString *)orderId
+-(void)checkControlResult:(NSString *)orderId andOpration:(NSNumber *)opration
 {
     controlNum = 0;
     checkOrderId = orderId;
-    [self checkControlResult];
+    checkControlOpration = opration;
+    [self checkControlResultWithOpration];
     
 }
--(void)checkControlResult
+-(void)checkControlResultWithOpration
 {
     NSString *getUrl = BaseURL@"getStatus/parkInOut";
     NSDictionary *parameterDic = @{
                                    @"id":checkOrderId
                                    };
-    [MBProgressHUD showHUDAddedTo:Window animated:YES];
+    [MBProgressHUD showAnimateExitHUDAddedTo:Window text:@"操作处理中"];
     [[AFHTTPRequestOperationManager manager] GET:getUrl parameters:parameterDic success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         NSDictionary *dic = responseObject;
-        NSLog(@"getDic:%@",dic);
+        NSLog(@"操控结果查询：:%@\n%@",dic,dic[@"msg"]);
         if ([dic[@"data"] isKindOfClass:[NSDictionary class]]) {
             NSDictionary *dict = dic[@"data"];
             if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@1]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@1])) {
@@ -826,26 +828,88 @@
                 [MBProgressHUD showSuccess:@"车位下放中" toView:Window];
                 [self.navigationController popToRootViewControllerAnimated:YES];
                 controlNum = 0 ;
+                if ([checkControlOpration isEqualToNumber:@2]) {
+                    
+                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"parkingNote"];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                }
             }else if (([dict[@"inStatus"] isKindOfClass:[NSNumber class]] && [dict[@"inStatus"] isEqualToNumber:@0]) || ([dict[@"outStatus"] isKindOfClass:[NSNumber class]] && [dict[@"outStatus"] isEqualToNumber:@0]))
             {
                 controlNum = 0 ;
                 [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-
-                [MBProgressHUD showError:@"请重新操作" toView:Window];
+                
+                if([dict[@"plcStatus"] isKindOfClass:[NSNumber class]])
+                {
+                    if ([dict[@"plcStatus"] isEqualToNumber:@31] || [dict[@"plcStatus"] isEqualToNumber:@41]) {
+                        [MBProgressHUD showMessag:@"车库正在运行中" toView:Window];
+                    }else if ([dict[@"plcStatus"] isEqualToNumber:@32] || [dict[@"plcStatus"] isEqualToNumber:@42])
+                    {
+                        [MBProgressHUD showMessag:@"存取车失败,请稍后重试" toView:Window];
+                        
+                    }
+                    else if ([dict[@"plcStatus"] isEqualToNumber:@33] || [dict[@"plcStatus"] isEqualToNumber:@43])
+                    {
+                        [MBProgressHUD showMessag:@"车库故障，请稍后再试" toView:Window];
+                        
+                    }else if (controlNum < 5) {
+                        [self performSelector:@selector(checkControlResultWithOpration) withObject:nil afterDelay:2.0f];
+                        controlNum ++ ;
+                    }else
+                    {
+                        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                        [MBProgressHUD showError:@"处理失败" toView:Window];
+                    }
+                }else
+                {
+                    [MBProgressHUD showError:@"出库异常，请重新操作" toView:Window];
+                }
             }else
             {
-                if (controlNum < 3) {
-                    [self performSelector:@selector(checkControlResult) withObject:nil afterDelay:2.0f];
-                    controlNum ++ ;
+                if([dict[@"plcStatus"] isKindOfClass:[NSNumber class]])
+                {
+                    if ([dict[@"plcStatus"] isEqualToNumber:@31] || [dict[@"plcStatus"] isEqualToNumber:@41]) {
+                        [MBProgressHUD showMessag:@"车库正在运行中" toView:Window];
+                    }else if ([dict[@"plcStatus"] isEqualToNumber:@32] || [dict[@"plcStatus"] isEqualToNumber:@42])
+                    {
+                        [MBProgressHUD showMessag:@"存取车失败,请稍后重试" toView:Window];
+                        
+                    }
+                    else if ([dict[@"plcStatus"] isEqualToNumber:@33] || [dict[@"plcStatus"] isEqualToNumber:@43])
+                    {
+                        [MBProgressHUD showMessag:@"车库故障，请稍后再试" toView:Window];
+                        
+                    }else if (controlNum < 5) {
+                        [self performSelector:@selector(checkControlResultWithOpration) withObject:nil afterDelay:2.0f];
+                        controlNum ++ ;
+                    }else
+                    {
+                        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                        [MBProgressHUD showError:@"处理失败" toView:Window];
+                    }
+                    
+                }else{
+                    if (controlNum < 5) {
+                        [self performSelector:@selector(checkControlResultWithOpration) withObject:nil afterDelay:2.0f];
+                        controlNum ++ ;
+                    }else
+                    {
+                        [MBProgressHUD hideAllHUDsForView:Window animated:YES];
+                        [MBProgressHUD showError:@"处理失败" toView:Window];
+                    }
                 }
-                [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-
+                
+                
                 //                [self checkControlResult:orderId];
             }
+        }else
+        {
+            [MBProgressHUD hideHUDForView:Window animated:YES];
+            [MBProgressHUD showError:dic[@"msg"] toView:Window];
         }
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         [MBProgressHUD hideAllHUDsForView:Window animated:YES];
-
+        [MBProgressHUD showError:@"网络错误" toView:Window];
+        
     }];
 }
 #pragma mark 百度坐标转高德坐标

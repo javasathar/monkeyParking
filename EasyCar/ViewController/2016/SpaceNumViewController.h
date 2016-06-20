@@ -17,4 +17,5 @@
 //车位数据
 @property (nonatomic ,strong)NSArray *spaceArr;
 @property (nonatomic ,strong)NSString *parkNo;//默认选中的车位
+
 @end

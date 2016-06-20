@@ -25,6 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
     [self.nav setTitle:@"选择车位" leftText:nil rightTitle:nil showBackImg:YES];
     
     [self viewInitial];
@@ -39,6 +40,17 @@
     }
 }
 
+
+-(void)left
+{
+    if (_parkNo) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        
+    }else
+    {
+        [super left];
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -153,6 +165,9 @@
     if (selectBtn) {
         locationNum = 0;
         [self checkDistancePass];
+    }else
+    {
+        [MBProgressHUD showMessag:@"请选择车位" toView:Window];
     }
     
 }
@@ -192,7 +207,7 @@
         }
         [self getRequestURL:getUrl parameters:parameterDic success:^(NSDictionary *dic) {
             NSLog(@"getDic%@ %@",dic,dic[@"msg"]);
-            [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
+            //            [MBProgressHUD showResult:YES text:dic[@"msg"] delay:1.5f];
             if([dic[@"data"] isKindOfClass:[NSDictionary class]])
             {
                 NSString *netOrderId = dic[@"data"][@"orderid"];
@@ -200,28 +215,42 @@
                     netOrderId = dic[@"data"][@"orderId"];
                 }
                 if (netOrderId) {
-                    [self checkControlResult:netOrderId];
+                    if ([_opration isEqualToNumber:@1]) {
+                        //保存停车记录
+                        [self safeParkingNote:_park andParkArea:_parkArea.length > 1 ?_parkArea:[NSString stringWithFormat:@"%@0",_parkArea] andParkNo:[NSString stringWithFormat:@"%ld",(long) selectBtn.tag] andControlType:1 andOrderId:@""];
+                        [self checkControlResult:netOrderId andOpration:@1];
+                    }else if([_opration isEqualToNumber:@2])
+                    {
+                        //删除停车记录
+                        //                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"parkingNote"];
+                        //                        [[NSUserDefaults standardUserDefaults] synchronize];
+                        [self checkControlResult:netOrderId andOpration:@2];
+
+                    }
+                    
+                    
                 }else
                 {
                     [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];
                 }
                 
-            }
-            if ([_opration isEqualToNumber:@1]) {
-                //保存停车记录
-                [self safeParkingNote:_park andParkArea:_parkArea.length > 1 ?_parkArea:[NSString stringWithFormat:@"%@0",_parkArea] andParkNo:[NSString stringWithFormat:@"%ld",(long) selectBtn.tag] andControlType:1 andOrderId:@""];
                 
-            }else if([_opration isEqualToNumber:@2])
+            }else
             {
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"parkingNote"];
-                [[NSUserDefaults standardUserDefaults] synchronize];
+                [MBProgressHUD showError:@"数据出错,订单号为空" toView:Window];
+                
             }
+            
             
         } elseAction:^(NSDictionary *dic) {
             
         } failure:^(NSError *error) {
             
         }];
+    }
+    else
+    {
+        [MBProgressHUD showMessag:@"请选择车位" toView:Window];
     }
 }
 #pragma mark 判断操作距离
@@ -259,26 +288,50 @@
     
     CLLocation* dist=[[CLLocation alloc] initWithLatitude:_park.parklat_R longitude:_park.parklon_R];
     NSLog(@"distance%f",[nowLocation distanceFromLocation:dist]);
-    if ([nowLocation distanceFromLocation:dist] < k_allDistance) {
-        if (locationNum == 0) {
-            locationNum = 1;
+    if (locationNum == 0) {
+        locationNum = 1;
+        if ([nowLocation distanceFromLocation:dist] < k_allDistance) {
+            
             if([_opration isEqualToNumber:@2])
             {
                 NSDictionary *parkingNote = [[NSUserDefaults standardUserDefaults] valueForKey:@"parkingNote"];
-                [self showFunctionAlertWithTitle:@"请确认" message:[NSString stringWithFormat:@"请确认%@ %@是不是之前停的车位，若不是，请联系现场管理员",parkingNote[@"parkArea"],parkingNote[@"parkNo"]] functionName:@"确认（是）" Handler:^{
+                //                [self showFunctionAlertWithTitle:@"请确认" message:[NSString stringWithFormat:@"请确认%@库%@是不是之前停的车位，若不是，请联系现场管理员",[NSString stringWithFormat:@"%@",                [parkingNote[@"parkArea"] substringWithRange:NSMakeRange(0, 1)]],parkingNote[@"parkNo"]] functionName:@"确认" Handler:^{
+                //                    [self controlParking];
+                //
+                //                }];
+                UIAlertController *alertCtl = [UIAlertController alertControllerWithTitle:@"请确认" message:[NSString stringWithFormat:@"查询到您的车在%@库%@，是否取车",[NSString stringWithFormat:@"%@",                [parkingNote[@"parkArea"] substringWithRange:NSMakeRange(0, 1)]],parkingNote[@"parkNo"]] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                    [self alertCancel];
+                }];
+                UIAlertAction *handleAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action){
                     [self controlParking];
                     
                 }];
+                [alertCtl addAction:cancelAction];
+                [alertCtl addAction:handleAction];
+                [self presentViewController:alertCtl animated:YES completion:nil];
+                
             }else
             {
                 [self controlParking];
                 
             }
+            
+        }else
+        {
+            [MBProgressHUD showResult:NO text:@"安全起见，请在车库旁操作" delay:2.0f];
         }
-    }else
-    {
-        [MBProgressHUD showResult:NO text:@"安全起见，请在车库旁操作" delay:2.0f];
     }
+}
+#pragma mark 取消消除停车记录
+-(void)alertCancel
+{
+    [self showFunctionAlertWithTitle:@"请联系管理员" message:@"按“确认”将清除停车记录" functionName:@"确认" Handler:^{
+        //删除停车记录
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"parkingNote"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+    }];
 }
 
 /*
